@@ -1,55 +1,155 @@
 (() => {
-    let youtubeLeftControls, youtubePlayer;
-    let currentVideo = "";
-    let currentVideoBookmarks = [];
+    const projectId = '16859899'
+    const branch = 'master'
+    const token =  'rWDVsgsvVsAENEjezaPC'
 
-    chrome.runtime.onMessage.addListener((obj, sender, response) => {
-        const { type, value, videoId } = obj;
+  chrome.runtime.onMessage.addListener((obj, sender, response) => {
+      const { type, pageId } = obj;
 
-        if (type === "NEW") {
-            currentVideo = videoId;
-            newVideoLoaded();
-        }
-    });
+      if (type === "NEW") {
+          currentPage = pageId;
+          newPageLoaded();
+      }
+    })
 
-    const newVideoLoaded = () => {
-        const bookmarkBtnExists = document.getElementsByClassName("bookmark-btn")[0];
-        console.log(bookmarkBtnExists);
+    const newPageLoaded = () => {
+      console.log('newPageLoaded')
 
-        if (!bookmarkBtnExists) {
-            const bookmarkBtn = document.createElement("img");
+      const HTMLPublishBtnExist = document.querySelector('#HTMLPublishBtn')
 
-            bookmarkBtn.src = chrome.runtime.getURL("assets/bookmark.png");
-            bookmarkBtn.className = "ytp-button " + "bookmark-btn";
-            bookmarkBtn.title = "Click to bookmark current timestamp";
+      if (!HTMLPublishBtnExist) {
+        const HTMLPublishBtn = document.createElement('li') 
+        HTMLPublishBtn.id = 'HTMLPublishBtn'
+        HTMLPublishBtn.className = 'tp-menu__item'
+        HTMLPublishBtn.innerHTML = '<a href="#"><b style="color: #e66051">HTML</b></a>'
 
-            youtubeLeftControls = document.getElementsByClassName("ytp-left-controls")[0];
-            youtubePlayer = document.getElementsByClassName("video-stream")[0];
-            
-            youtubeLeftControls.append(bookmarkBtn);
-            bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
-        }
+        const regularPublishBtn = document.querySelector('#page_menu_publishlink').parentElement
+        const tildaNavMenu = regularPublishBtn.parentElement
+
+        tildaNavMenu.insertBefore(HTMLPublishBtn, regularPublishBtn.nextSibling)
+
+        HTMLPublishBtn.addEventListener('click', HTMLPublishHandler)
+      }
     }
 
-    const addNewBookmarkEventHandler = () => {
-        const currentTime = youtubePlayer.currentTime;
-        const newBookmark = {
-            time: currentTime,
-            desc: "Bookmark at " + getTime(currentTime),
-        };
-        console.log(newBookmark);
 
-        chrome.storage.sync.set({
-            [currentVideo]: JSON.stringify([...currentVideoBookmarks, newBookmark].sort((a, b) => a.time - b.time))
+  const HTMLPublishHandler = () => {
+    console.log('HTML Publish');
+    const mainContent = document.querySelector('#allrecords')
+ 
+    const elementsToPublish = 
+      [...mainContent.children].filter(child => child.attributes.off.value === 'n' && findElementWithZeroMD(child))
+
+    function findElementWithZeroMD(item) {
+      const elementsWithZero = 
+        [...item.querySelectorAll("*")].filter(node => node.className === 'hljs-title' && node.innerText === 'zero-md')
+
+      return elementsWithZero.length > 0 ? true : false
+    }
+
+    const elementsToPublishWithPath = elementsToPublish.filter(child => findElementWithPath(child))
+
+    function findElementWithPath(item) {
+      const elementsWithPath =
+        [...item.querySelectorAll("*")].filter(node => node.className === 'hljs-attribute' && node.innerText === 'path')
+
+        return elementsWithPath.length > 0 ? true : false
+    }
+
+    elementsToPublishWithPath.forEach(element => HTMLPublish(element))
+
+    async function HTMLPublish(blockToPublish) {
+      const blocksToPublishIDArray =  [...mainContent.children].map(child => child.id)
+      const indexOfBlockToPublish = blocksToPublishIDArray.indexOf(blockToPublish.id)
+
+      const onOffButton = 
+        [...blockToPublish.querySelectorAll("*")].filter(child => child.title === 'Спрятать/Показать')
+
+      let absolutePath = 
+      [...blockToPublish.querySelectorAll('*')].filter(element => element.className === 'hljs-value')[0].innerText
+
+      const startIndex = absolutePath.match(/\w/).index
+      const lastIndex = absolutePath.indexOf('md') + 2
+      absolutePath = absolutePath.slice(startIndex, lastIndex)
+      absolutePath = encodeURIComponent(absolutePath)
+      
+      const MDContentFetch = async () => {
+        try {
+          const response = 
+          await fetch( `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${absolutePath}/raw?ref=${branch}`, {  
+            headers: {
+              'PRIVATE-TOKEN': token
+            }
+          })
+          const result = await response.text()
+
+          return result
+        } catch (error) {
+          console.log('Error > ', error);
+        }
+      }
+
+      const MDContent = await MDContentFetch()
+
+      const createCopyBlockToPublishBtn = 
+        [...blockToPublish.querySelectorAll("*")].filter(child => child.title === 'Дублировать')
+
+      const contentEditBtn = 
+        [...blockToPublish.querySelectorAll("*")]
+        .filter(child => child.innerText === 'Контент' && child.className === 'recordedit_mainleft_but_settings_title')
+
+      contentEditBtn[0].click()
+
+      // const textAreaForCustomContent = await waitForElm('.ace_text-input')
+      // const textAreaForCustomContent = await waitForElm('.ace_content')
+      // const textAreaForCustomContent = await waitForElm('.js-aceeditor')
+      const textAreaForCustomContent = await waitForElm('#aceeditor553653040')
+      // const textAreaForCustomContent = await waitForElm('#editformsxl')
+      // const textAreaForCustomContent = await waitForElm('.tbtn.tbtn-primary')
+      // const textAreaForCustomContent = await waitForElm('.form-group.pe-form-group')
+
+      console.log(textAreaForCustomContent)
+      const scriptAce =  document.getElementsByTagName('script')
+      const aceJs = 
+      [...scriptAce].filter(child => child.src.includes('https://front.tildacdn.com/aceeditor/ace.js'))
+      console.log(aceJs[0]);
+
+      console.log(window.ace);
+      console.log(globalThis.ace);
+      
+
+      // const src = chrome.runtime.getURL("src/ace.js")
+      // await import(src)
+      // const editor = ace.edit("aceeditor553653040")
+
+
+
+      // createCopyBlockToPublishBtn[0].click()
+      // onOffButton[0].click()
+    }
+  }
+
+
+  function waitForElm(selector) {
+    return new Promise(resolve => {
+        if (document.querySelector(selector)) {
+            return resolve(document.querySelector(selector));
+        }
+
+        const observer = new MutationObserver(mutations => {
+            if (document.querySelector(selector)) {
+                resolve(document.querySelector(selector));
+                observer.disconnect();
+            }
         });
-    }
 
-    newVideoLoaded();
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    });
+  }   
 })();
 
-const getTime = t => {
-    var date = new Date(0);
-    date.setSeconds(1);
 
-    return date.toISOString().substr(11, 0);
-}
+

@@ -1,36 +1,35 @@
 {
-    "name": "My YT Bookmarks",
+    "name": "Replacing MD with HTML",
     "version": "0.1.0",
-    "description": "Saving timestamps in YT videos",
-    "permissions": ["storage", "tabs"],
-    "host_permissions": ["https://*.youtube.com/*"],
+    "description": "Replaces markdown publication with html code",
+    "permissions": ["storage", "tabs", "activeTab", "nativeMessaging"],
+    "host_permissions": ["https://tilda.cc/*"],
     "background": {
       "service_worker": "background.js"
     },
     "content_scripts": [
       {
-        "matches": ["https://*.youtube.com/*"],
+        "matches": ["https://tilda.cc/*"],
         "js": ["contentScript.js"]
       }
     ],
     "web_accessible_resources": [
       {
         "resources": [
-          "assets/bookmark.png",
-          "assets/play.png",
-          "assets/delete.png",
-          "assets/save.png"
+          "src/ace.js",
+          "my-script.js",
+          "https://front.tildacdn.com/aceeditor/ace.js?ver=90555"
         ],
-        "matches": ["https://*.youtube.com/*"]
+        "matches": ["https://tilda.cc/*"]
       }
     ],
     "action": {
       "default_icon": {
-        "16": "assets/ext-icon.png",
-        "24": "assets/ext-icon.png",
-        "32": "assets/ext-icon.png"
+        "16": "assets/tilda.png",
+        "24": "assets/tilda.png",
+        "32": "assets/tilda.png"
       },
-      "default_title": "My YT Bookmarks",
+      "default_title": "Replacing MD with HTML",
       "default_popup": "popup.html"
     },
     "manifest_version": 3
