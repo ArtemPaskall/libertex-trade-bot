@@ -1,8 +1,8 @@
 {
-    "name": "Replacing MD with HTML",
+    "name": "zero-md-tilda-rendering-chrome-extension",
     "version": "0.1.0",
-    "description": "Replaces markdown publication with html code",
-    "permissions": ["storage", "tabs", "activeTab", "nativeMessaging"],
+    "description": "Renders zero-md to html in html tilda blocks before publishing",
+    "permissions": ["storage", "tabs", "activeTab", "nativeMessaging", "background"],
     "host_permissions": ["https://tilda.cc/*"],
     "background": {
       "service_worker": "background.js"
@@ -16,9 +16,7 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "src/ace.js",
-          "my-script.js",
-          "https://front.tildacdn.com/aceeditor/ace.js?ver=90555"
+          "my-script.js"
         ],
         "matches": ["https://tilda.cc/*"]
       }
@@ -29,7 +27,7 @@
         "24": "assets/tilda.png",
         "32": "assets/tilda.png"
       },
-      "default_title": "Replacing MD with HTML",
+      "default_title": "Renders zero-md to html in html tilda blocks",
       "default_popup": "popup.html"
     },
     "manifest_version": 3
