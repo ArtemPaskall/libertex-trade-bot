@@ -5,7 +5,6 @@ chrome.tabs.onUpdated.addListener((tabId, info, tab) => {
 
     chrome.tabs.sendMessage(tabId, {
       type: 'NEW',
-      pageId: urlParameters.get('pageid'),
     })
   }
 })

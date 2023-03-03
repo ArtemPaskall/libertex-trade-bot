@@ -18,9 +18,10 @@
 
 
   chrome.runtime.onMessage.addListener((obj, sender, response) => {
-    const { type } = obj
+    const { type, pageId } = obj
 
     if (type === 'NEW') {
+      currentPage = pageId
       newPageLoaded()
     }
   })
@@ -90,45 +91,44 @@
       return elementsWithPath.length > 0 ? true : false
     }
 
-    // elementsToPublishWithPath.forEach(element => HTMLPublish(element))
-    // HTMLPublish(elementsToPublishWithPath[0])
+    elementsToPublishWithPath.forEach(element => HTMLPublish(element))
+    HTMLPublish(elementsToPublishWithPath[0])
 
-    elementsToPublishWithPath.reduce((promise, element, index) => {
-      return promise.then(() => {
-        return new Promise(resolve => {
-          console.log(`Processing item ${index}`);
-          let patched = false
-          HTMLPublish(element, patched)
+    // elementsToPublishWithPath.reduce((promise, element, index) => {
+    //   return promise.then(() => {
+    //     return new Promise(resolve => {
+    //       console.log(`Processing item ${index}`);
+    //       let patched = false
+    //       HTMLPublish(element, patched)
 
-          setTimeout(() => {
-            console.log('second execution of HTMLPublish started');
-            let patched = true
-            HTMLPublish(element, patched)
-            console.log('second execution of HTMLPublish finished');
-          }, 6000);
+    //       setTimeout(() => {
+    //         console.log('second execution of HTMLPublish started');
+    //         let patched = true
+    //         HTMLPublish(element, patched)
+    //         console.log('second execution of HTMLPublish finished');
+    //       }, 5000);
 
 
 
-          setTimeout(() => {
-            console.log(`Finished processing item ${index}`);
-            resolve();
-            console.log(`5s passed`);
-            document.removeEventListener('ace-editor-created', () => {})
-          }, 21000);
+    //       setTimeout(() => {
+    //         console.log(`Finished processing item ${index}`);
+    //         resolve();
+    //         console.log(`5s passed`);
+    //       }, 9000);
 
-        });
-      });
-    }, Promise.resolve());
+    //     });
+    //   });
+    // }, Promise.resolve());
 
 
 
   }
 
 
-  // let patched = false
+  let patched = false
 
-  async function HTMLPublish(blockToPublish, patched) {
-    console.log('patched', patched);
+  async function HTMLPublish(blockToPublish) {
+    console.log(patched);
 
     if (!patched) {
     const mainContent = document.querySelector('#allrecords')
@@ -157,11 +157,12 @@
 
 
 
+        console.log('patched', patched);
         document.dispatchEvent(
           new CustomEvent('patch-ace'))
           console.log('patch-ace in contentScript')
 
-        //  patched = true
+         patched = true
 
         // const saveButton = await waitForElement('.tbtn.tbtn-primary')
         // saveButton.click()
@@ -206,7 +207,7 @@
 
 
       document.addEventListener('ace-editor-created', () => {
-        console.log('ace-editor-created executed in contentScript');
+        console.log('ace-editor-created');
       })
 
       const MDContentScriptTagWrapped =
