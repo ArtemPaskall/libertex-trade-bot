@@ -45,21 +45,6 @@
       tildaNavMenu.insertBefore(HTMLPublishBtn, regularPublishBtn.nextSibling)
 
       HTMLPublishBtn.addEventListener('click', HTMLPublishHandler)
-
-
-
-
-      const buttnReload = document.createElement('li')
-      buttnReload.id = 'HTMLPublishBtn2'
-      buttnReload.className = 'tp-menu__item'
-      buttnReload.innerHTML =
-        '<a href="#"><b style="color: #e66051">Update</b></a>'
-
-
-      tildaNavMenu.insertBefore(HTMLPublishBtn, regularPublishBtn.nextSibling)
-      tildaNavMenu.insertBefore(buttnReload, regularPublishBtn.nextSibling)
-
-      buttnReload.addEventListener('click', qqq)
     }
   }
 
@@ -137,7 +122,7 @@
             let patched = true
             HTMLPublish(element, patched)
             console.log('second execution of HTMLPublish finished');
-          }, 4000);
+          }, 7500);
 
 
 
@@ -146,7 +131,7 @@
             resolve();
             console.log(`5s passed`);
 
-          }, 14000);
+          }, 16000);
         });
       });
     }, Promise.resolve(createLoader('wrapperDark')));
@@ -173,6 +158,24 @@
       blockToPublish.id,
     )
 
+    const findOnOffButton = (element) => {
+      const onOffButton = [...element.querySelectorAll('*')].filter(
+        child => child.title === 'Спрятать/Показать',
+      )
+
+      return onOffButton
+    }
+
+    const findMooveUpButton = (element) => {
+      const mooveUpButton = [...element.querySelectorAll('*')].filter(
+        child => child.title === 'Переместить вверх',
+      )
+
+      console.log('mooveUpButton', mooveUpButton);
+      return mooveUpButton
+    }
+
+
     const onOffButton = [...blockToPublish.querySelectorAll('*')].filter(
       child => child.title === 'Спрятать/Показать',
     )
@@ -185,20 +188,59 @@
         child.className === 'recordedit_mainleft_but_settings_title',
     )
 
-    contentEditBtn[0].click()
+    const createCopyBlockToPublishBtn = [
+      ...blockToPublish.querySelectorAll('*'),
+    ].filter(child => child.title === 'Дублировать')
+
+    createCopyBlockToPublishBtn[0].click()
+
+
+    setTimeout(() => {
+      const sibling = blockToPublish.nextElementSibling
+      console.log('blockToPublish.nextSibling', sibling);
+      findOnOffButton(sibling)[0].click()
+      // findMooveUpButton(sibling)[0].click()
+      console.log('2500 left');
+
+      setTimeout(() => {
+        // const sibling = blockToPublish.nextElementSibling
+        // console.log('blockToPublish.nextSibling', sibling);
+        // findOnOffButton(sibling)[0].click()
+        findMooveUpButton(sibling)[0].click()
+        console.log('+1500 left');
+        }, 1000);
+
+
+   }, 2500);
+
+
+    // console.log('blockToPublish', blockToPublish);
+    // const sibling = blockToPublish.nextElementSibling
+    // console.log('blockToPublish.nextSibling', sibling);
+    // console.log('blockToPublish.nextSibling.className', blockToPublish.nextSibling.id);
+    // contentEditBtn[0].click()
+
+    setTimeout(() => {
+      contentEditBtn[0].click()
+      console.log('contentEditBtn[0].click()');
+   }, 4000);
+
+
+   setTimeout( async () => {
+
+    document.dispatchEvent(
+      new CustomEvent('patch-ace'))
+      console.log('patch-ace in contentScript')
+
+
+    // const saveButton = await waitForElement('.tbtn.tbtn-primary')
+    // saveButton.click()
+    // console.log(saveButton);
+
+   }, 5000);
 
 
 
-
-        document.dispatchEvent(
-          new CustomEvent('patch-ace'))
-          console.log('patch-ace in contentScript')
-
-        //  patched = true
-
-        // const saveButton = await waitForElement('.tbtn.tbtn-primary')
-        // saveButton.click()
-        // console.log(saveButton);
 
     } else {
       console.log('patched', patched);
@@ -232,9 +274,7 @@
       const MDContent = await MDContentFetch()
       // console.log(MDContent);
 
-      const createCopyBlockToPublishBtn = [
-        ...blockToPublish.querySelectorAll('*'),
-      ].filter(child => child.title === 'Дублировать')
+
 
 
 
@@ -308,8 +348,3 @@
 
 
 })()
-
-
-function qqq() {
-  console.log('qqq');
-}

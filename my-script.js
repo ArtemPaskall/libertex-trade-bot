@@ -8,32 +8,33 @@ let editor = undefined
 document.addEventListener('patch-ace', async () => {
   console.log('patch-ace started');
 
-//  setTimeout(() => {
-//     let originalEdit = window.ace.edit
+ setTimeout(() => {
+    let originalEdit = window.ace.edit
 
-//     window.ace.edit = name => {
-//       editor = originalEdit(name)
-//       document.dispatchEvent(new Event('ace-editor-created'))
+    window.ace.edit = name => {
+      editor = originalEdit(name)
+      document.dispatchEvent(new Event('ace-editor-created'))
 
-//       return editor
-//     }
+      return editor
+    }
 
-//     console.log('ace-editor-created in my-script.js');
-//     console.log('patch-ace finished');
-//     console.log('2sec left');
-//   }, 2000)
+    // console.log('ace-editor-created in my-script.js');
+    // console.log('patch-ace finished');
+    // console.log('4500 left');
+  }, 500)
 
 
 
-//   setTimeout( async () => {
-//     console.log(editor);
-//     const saveButton = await waitForElement('.tbtn.tbtn-primary')
-//     saveButton.click()
-//     console.log('save button clicked');
-//     // const HTMLButton = await waitForElement('#HTMLPublishBtn')
-//     // HTMLButton.click()
-//     // console.log('html button clicked');
-//   }, 2500)
+  setTimeout( async () => {
+    console.log(editor);
+    const saveButton = await waitForElement('.tbtn.tbtn-primary')
+    saveButton.click()
+    console.log('save button clicked');
+    console.log('5000 left');
+    // const HTMLButton = await waitForElement('#HTMLPublishBtn')
+    // HTMLButton.click()
+    // console.log('html button clicked');
+  }, 1000)
 
 
 
@@ -41,30 +42,34 @@ document.addEventListener('patch-ace', async () => {
 
   let count = 0;
 
-  const intervalId = setInterval(async () => {
+  // const intervalId = setInterval(async () => {
 
-    if (window.ace?.edit) {
-      let originalEdit = window.ace.edit
+  //   if (window.ace?.edit) {
+  //     let originalEdit = window.ace.edit
 
-      window.ace.edit = name => {
-        editor = originalEdit(name)
-        document.dispatchEvent(new Event('ace-editor-created'))
+  //     window.ace.edit = name => {
+  //       editor = originalEdit(name)
+  //       document.dispatchEvent(new Event('ace-editor-created'))
 
-        return editor
-      }
+  //       return editor
+  //     }
 
-      console.log(count);
-      console.log('ace-editor-created in my-script.js');
-      console.log('patch-ace finished');
-      console.log('2sec left');
+  //     console.log(count);
+  //     console.log('ace-editor-created in my-script.js');
+  //     console.log('patch-ace finished');
+  //     console.log('2sec left');
 
-      count++
-      clearInterval(intervalId)
+  //     count++
+  //     clearInterval(intervalId)
 
-      const saveButton = await waitForElement('.tbtn.tbtn-primary')
-      saveButton.click()
-    }
-  }, 5)
+  //     const saveButton = await waitForElement('.tbtn.tbtn-primary')
+  //     saveButton.click()
+  //   }
+  // }, 500)
+
+
+
+
 
   //   setTimeout( async () => {
   //   console.log(editor);
