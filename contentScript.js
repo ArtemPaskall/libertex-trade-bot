@@ -28,7 +28,7 @@
       HTMLPublishBtn.id = 'HTMLPublishBtn'
       HTMLPublishBtn.className = 'tp-menu__item'
       HTMLPublishBtn.innerHTML =
-        '<a href="#"><b style="color: #e66051">HTML</b></a>'
+        '<a href="#"><b style="color: #e66051">Render MD</b></a>'
 
       const regularPublishBtn = document.querySelector(
         '#page_menu_publishlink',
@@ -101,7 +101,8 @@
 
             setTimeout(() => {
               resolve()
-            }, 16000)
+            // }, 16000)
+            }, 18000)
           })
         })
       },
