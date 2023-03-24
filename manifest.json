@@ -2,8 +2,9 @@
     "name": "zero-md-tilda-rendering-chrome-extension",
     "version": "0.1.0",
     "description": "Renders zero-md to html in html tilda blocks before publishing",
-    "permissions": ["storage", "tabs", "activeTab", "nativeMessaging", "background"],
+    "permissions": ["storage", "tabs", "activeTab", "nativeMessaging", "background", "chrome.runtime"],
     "host_permissions": ["https://tilda.cc/*"],
+    "type": "module",
     "background": {
       "service_worker": "background.js"
     },
@@ -18,7 +19,7 @@
       {
         "resources": [
           "my-script.js",
-          "src/index.js"
+          "codalize.js"
         ],
         "matches": ["https://tilda.cc/*"],
         "type": "module"
