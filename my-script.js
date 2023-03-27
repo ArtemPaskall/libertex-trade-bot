@@ -1287,13 +1287,13 @@ class ZeroMd extends HTMLElement {
         const [, tocStartLevel] = md.match(tocStartLevelOption) || [null, 0]
         renderer.heading = (text, level) => {
           const [, pure, userId] = text.match(/^(.*)?\s*{#(.*)}$/im) || [null, text]
-          const pureWithoutTags = pure.replace(/<\/?\w+>/g, '')
+          // const pureWithoutTags = pure.replace(/<\/?\w+>/g, '')
           const anchorIdsToLowerCase = this.config.anchorIdsToLowerCase
           const id =
             userId ||
             (anchorIdsToLowerCase
-              ? IDfy(pureWithoutTags)
-              : IDfy(pureWithoutTags, { lowerCase: false }))
+              ? IDfy(pure)
+              : IDfy(pure, { lowerCase: false }))
           const pixelsNumber = this.config.indentInsideTocByPixels
 
           if (level > tocStartLevel) {
@@ -1301,7 +1301,7 @@ class ZeroMd extends HTMLElement {
               pixelsNumber * (level - 1 - tocStartLevel)
             }px"`
             tocLinks.push(
-              `<div ${indentInsideToc}><a href="#${id}">${pureWithoutTags}</a></div>`,
+              `<div ${indentInsideToc}><a href="#${id}">${pure}</a></div>`,
             )
           }
 
@@ -1657,8 +1657,6 @@ document.addEventListener('patch-ace', async () => {
 document.addEventListener('set-value-to-editor', e => {
   setTimeout(async () => {
     const ZeroMDInstance = new ZeroMd()
-    // ZeroMDInstance.lang = 'uk'
-    // ZeroMDInstance.code = 'py'
     ZeroMDInstance.path = 'qaest/selenides-quick-start.docs.md'
 
     const markDown = await ZeroMDInstance.buildMd()
@@ -1675,21 +1673,17 @@ document.addEventListener('set-value-to-editor', e => {
 
 
     const customScript = '<script>' +
-    'const code = "PY"\n' +
-    'const lang = "EN"\n' +
+    'const code = "JAVA"\n' +
+    'const lang = "RU"\n' +
     'const markdownBody = document.querySelector(".markdown-body")\n' +
-    'console.log(markdownBody)\n' +
-    'const jsTags = markdownBody.getElementsByTagName("en")\n' +
     'const allNodes = markdownBody.querySelectorAll("*")\n' +
     ';[...allNodes].forEach(node => {\n' +
       'const match = [...node.tagName.matchAll(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)]\n' +
       'if (match.length) {\n' +
         'node.classList.add("inline-content")\n' +
-        'console.log("node", node)\n' +
         'const [[matchedTagName]] = match\n' +
         'if (code === matchedTagName || lang === matchedTagName) {\n' +
           'node.classList.add("active")\n' +
-          'console.log("node", node)\n' +
     '}}})\n' +
     'console.log(jsTags)\n' +
     'console.log("allNodes", allNodes)\n' +
