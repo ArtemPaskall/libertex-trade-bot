@@ -96,13 +96,12 @@
 
             setTimeout(() => {
               let patched = true
-              HTMLPublish(element, patched)
+              HTMLPublish(element, patched, index, elementsToPublishWithPath.length)
             }, 7500)
 
             setTimeout(() => {
               resolve()
             }, 16000)
-            // }, 18000)
           })
         })
       },
@@ -114,7 +113,7 @@
     })
   }
 
-  async function HTMLPublish(blockToPublish, patched) {
+  async function HTMLPublish(blockToPublish, patched, index, parentArrayLength) {
     if (!patched) {
       const mainContent = document.querySelector('#allrecords')
 
@@ -211,10 +210,13 @@
 
       contentEditBtn[0].click()
 
+      const lastZeroMdElement = index === parentArrayLength - 1 ? true : false
+
       document.dispatchEvent(
         new CustomEvent('set-value-to-editor', {
           detail: {
             value: MDContentScriptTagWrapped,
+            lastZeroMdElement,
           },
         }),
       )

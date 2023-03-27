@@ -10,18 +10,15 @@
     "content_scripts": [
       {
         "matches": ["https://tilda.cc/*"],
-        "js": ["contentScript.js"],
-        "type": "module"
+        "js": ["contentScript.js"]
       }
     ],
     "web_accessible_resources": [
       {
         "resources": [
-          "my-script.js",
-          "codalize.js"
+          "my-script.js"
         ],
-        "matches": ["https://tilda.cc/*"],
-        "type": "module"
+        "matches": ["https://tilda.cc/*"]
       }
     ],
     "action": {

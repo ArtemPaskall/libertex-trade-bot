@@ -1655,6 +1655,8 @@ document.addEventListener('patch-ace', async () => {
 })
 
 document.addEventListener('set-value-to-editor', e => {
+  console.log(e.detail.lastZeroMdElement);
+  const lastZeroMdElement = e.detail.lastZeroMdElement
   setTimeout(async () => {
     const ZeroMDInstance = new ZeroMd()
     ZeroMDInstance.path = 'qaest/selenides-quick-start.docs.md'
@@ -1672,12 +1674,12 @@ document.addEventListener('set-value-to-editor', e => {
 
 
 
-    const customScript = '<script>' +
+    const translationScript = '<script>\n' +
     'const code = "JAVA"\n' +
-    'const lang = "RU"\n' +
-    'const markdownBody = document.querySelector(".markdown-body")\n' +
-    'const allNodes = markdownBody.querySelectorAll("*")\n' +
-    ';[...allNodes].forEach(node => {\n' +
+    'const lang = "EN"\n' +
+  '  const markdownBody = document.querySelectorAll(".markdown-body")\n' +
+    'const allNodes = [...markdownBody].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
+    ';allNodes.forEach(node => {\n' +
       'const match = [...node.tagName.matchAll(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)]\n' +
       'if (match.length) {\n' +
         'node.classList.add("inline-content")\n' +
@@ -1685,18 +1687,23 @@ document.addEventListener('set-value-to-editor', e => {
         'if (code === matchedTagName || lang === matchedTagName) {\n' +
           'node.classList.add("active")\n' +
     '}}})\n' +
-    'console.log(jsTags)\n' +
-    'console.log("allNodes", allNodes)\n' +
     '</script>'
 
 
 
-    const stampedBodyHtml =
-      css + stampedBody.outerHTML + prismURL + prismLoaderURL + customScript
+    let stampedBodyHtml =
+      css + stampedBody.outerHTML + prismURL + prismLoaderURL
+
+    if (lastZeroMdElement) {
+      stampedBodyHtml += translationScript
+    }
+
     editor.setValue(stampedBodyHtml)
   }, 1000)
 
   setTimeout(async () => {
+
+
     const saveButton = await waitForElement('.tbtn.tbtn-primary')
     saveButton.click()
     originalEdit = undefined
