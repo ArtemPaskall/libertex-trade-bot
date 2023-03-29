@@ -1723,3 +1723,109 @@ function IDfy(
     ? name.toLowerCase().replace(options.replace.its, options.replace.with)
     : name.replace(options.replace.its, options.replace.with)
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script defer>
+// const code = "PY"
+// const lang = "EN"
+// const markdownBody = document.querySelectorAll(".markdown-body")
+// const allNodes = [...markdownBody].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])
+// ;allNodes.forEach(node => {
+// const match = [...node.tagName.matchAll(/\b(js|ts|java|py|cs|en|uk|ru)\b/gi)]
+// if (match.length) {
+// node.classList.add("inline-content")
+// const [[matchedTagName]] = match
+// if (code === matchedTagName || lang === matchedTagName) {
+// node.classList.add("active")
+// }}})
+
+
+let code = localStorage.getItem("automician.ButtonsMenu..current-code.code").toUpperCase()
+// let code = localStorage.getItem("automician.ButtonsMenu..current-code.code")
+
+let lang = localStorage.getItem("automician.ButtonsMenu..current-code.lang").toUpperCase().trim()
+console.log('laaaaaaaaaaaaaaaaang', `11${lang}11`)
+// let lang = localStorage.getItem("automician.ButtonsMenu..current-code.lang")
+// console.log('lang', `11${lang}11`)
+// let code = "JAVA"
+// let lang = "EN"
+const markdownBody = document.querySelectorAll(".markdown-body")
+const allNodes = [...markdownBody].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])
+setTimeout(() => {
+allNodes.forEach(node => {
+const match = [...node.tagName.matchAll(/\b(js|ts|java|py|cs|en|uk|ru)\b/gi)]
+if (match.length) {
+node.classList.add("inline-content")
+const [[matchedTagName]] = match
+if (code === matchedTagName || lang === matchedTagName) {
+node.classList.add("active")
+}}})
+
+}, 20)
+
+
+
+
+document.addEventListener('changeLanguage', () => {
+console.log('change language')
+let prevCode = code;
+let prevLang = lang;
+console.log('prevLaaaaaaaaaaaaaaaaaaaang', `11${prevLang}11`)
+console.log('prevLangtriiiiiiiiiiiiim',`11${prevLang.trim()}11`)
+// console.log('prevCode', prevCode)
+// console.log('prevLang', prevLang)
+code = localStorage.getItem("automician.ButtonsMenu..current-code.code").toUpperCase()
+lang = localStorage.getItem("automician.ButtonsMenu..current-code.lang").toUpperCase()
+// console.log('newCode', code)
+// console.log('prevLang', lang)
+
+if (prevCode !== code) {
+    // console.log('works')
+allNodes.forEach(node => {
+if (node.tagName.toUpperCase() === prevCode && node.classList.contains('active')) {
+    node.classList.remove('active')
+}
+if (node.tagName.toUpperCase() === code) {
+    node.classList.add('active')
+}})}
+
+
+if (prevLang !== lang) {
+
+allNodes.forEach(node => {
+    // console.log('node.tagName.toUpperCase()', `11${node.tagName.toUpperCase()}11`)
+    // console.log('prevLang', `11${prevLang}11`)
+if (node.tagName.toUpperCase() === prevLang && node.classList.contains('active')) {
+    // console.log('remove active')
+    node.classList.remove('active')
+}
+
+// console.log('node.tagName.toUpperCase()', `11${node.tagName.toUpperCase()}11`)
+if (node.tagName.toUpperCase() === lang.trim()) {
+    //  console.log('works7')
+    node.classList.add('active')
+} else {
+    // console.log('something wrong')
+}
+
+
+})}
+})
+
+
+
+
+</script>

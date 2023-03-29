@@ -1655,8 +1655,8 @@ document.addEventListener('patch-ace', async () => {
 })
 
 document.addEventListener('set-value-to-editor', e => {
-  console.log(e.detail.lastZeroMdElement);
   const lastZeroMdElement = e.detail.lastZeroMdElement
+
   setTimeout(async () => {
     const ZeroMDInstance = new ZeroMd()
     ZeroMDInstance.path = 'qaest/selenides-quick-start.docs.md'
@@ -1666,14 +1666,10 @@ document.addEventListener('set-value-to-editor', e => {
 
     let stampedBody = ZeroMDInstance.stampBody(markDown)
 
-    const body = document.querySelector('body')
     const prismURL =
       '<script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"></script>'
     const prismLoaderURL =
       '<script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"></script>'
-
-
-
     const translationScript = '<script>\n' +
     'const code = "JAVA"\n' +
     'const lang = "EN"\n' +
@@ -1702,8 +1698,6 @@ document.addEventListener('set-value-to-editor', e => {
   }, 1000)
 
   setTimeout(async () => {
-
-
     const saveButton = await waitForElement('.tbtn.tbtn-primary')
     saveButton.click()
     originalEdit = undefined
