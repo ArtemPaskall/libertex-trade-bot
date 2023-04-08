@@ -70,6 +70,26 @@
       return elementsWithPath.length > 0 ? true : false
     }
 
+    const flexTagsArray = [...elementsToPublishWithPath[0].querySelectorAll('*')]
+      .filter(node => node.className === 'hljs-title' && node.innerText.match(/\bflex-(1[0-2]|[1-9])\b/))
+      .map(node => node.innerText)
+
+    const flexGrowArray = getGrowValuesFrom(flexTagsArray)
+
+    function getGrowValuesFrom(flexTagsArray) {
+      if (flexTagsArray.length === 6
+        && flexTagsArray[0] === flexTagsArray[1]
+        && flexTagsArray[2] === flexTagsArray[3]
+        && flexTagsArray[4] === flexTagsArray[5]
+      ) {
+        const grow1 = flexTagsArray[0].split('-')[1]
+        const grow2 = flexTagsArray[2].split('-')[1]
+        const grow3 = flexTagsArray[4].split('-')[1]
+
+        return [grow1, grow2, grow3]
+      }
+    }
+
     const createLoader = loaderId => {
       const darkWrapOnScriptExecuting = document.createElement('div')
       darkWrapOnScriptExecuting.id = loaderId
@@ -96,7 +116,7 @@
 
             setTimeout(() => {
               let patched = true
-              HTMLPublish(element, patched, index, elementsToPublishWithPath.length)
+              HTMLPublish(element, patched, index, elementsToPublishWithPath.length, flexGrowArray)
             }, 7500)
 
             setTimeout(() => {
@@ -113,7 +133,7 @@
     })
   }
 
-  async function HTMLPublish(blockToPublish, patched, index, parentArrayLength) {
+  async function HTMLPublish(blockToPublish, patched, index, parentArrayLength, flexGrowArray) {
     if (!patched) {
       const mainContent = document.querySelector('#allrecords')
 
@@ -173,34 +193,15 @@
       const startIndex = absolutePath.match(/\w/).index
       const endIndex = absolutePath.indexOf('md') + 2
       absolutePath = absolutePath.slice(startIndex, endIndex)
-      absolutePath = encodeURIComponent(absolutePath)
 
-      async function MDContentFetch() {
-        try {
-          const response = await fetch(
-            `https://gitlab.com/api/v4/projects/${projectId}/repository/files/${absolutePath}/raw?ref=${branch}`,
-            {
-              headers: {
-                'PRIVATE-TOKEN': token,
-              },
-            },
-          )
-          const result = await response.text()
 
-          return result
-        } catch (error) {
-          console.log('Error > ', error)
-        }
-      }
+      const langFromZeroMDAttributes = [...blockToPublish.querySelectorAll('*')]
+        .filter(node => node.className === 'hljs-attribute' && node.innerText === 'lang')
+        .map(node => node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase())
 
-      const MDContent = await MDContentFetch()
-
-      const MDContentScriptTagWrapped =
-        '<zero-md>\n' +
-        '<script type="text/markdown">\n' +
-        `${MDContent}\n` +
-        '</script>\n' +
-        '</zero-md>'
+      const codeFromZeroMDAttributes = [...blockToPublish.querySelectorAll('*')]
+        .filter(node => node.className === 'hljs-attribute' && node.innerText === 'code')
+        .map(node => node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase())
 
       const contentEditBtn = [...blockToPublish.querySelectorAll('*')].filter(
         child =>
@@ -215,32 +216,15 @@
       document.dispatchEvent(
         new CustomEvent('set-value-to-editor', {
           detail: {
-            value: MDContentScriptTagWrapped,
             lastZeroMdElement,
+            absolutePath,
+            flexGrowArray,
+            langFromZeroMDAttributes: langFromZeroMDAttributes[0],
+            codeFromZeroMDAttributes: codeFromZeroMDAttributes[0],
           },
         }),
       )
     }
-  }
-
-  function waitForElement(selector) {
-    return new Promise(resolve => {
-      if (document.querySelector(selector)) {
-        return resolve(document.querySelector(selector))
-      }
-
-      const observer = new MutationObserver(mutations => {
-        if (document.querySelector(selector)) {
-          resolve(document.querySelector(selector))
-          observer.disconnect()
-        }
-      })
-
-      observer.observe(document.body, {
-        childList: true,
-        subtree: true,
-      })
-    })
   }
 })()
 
