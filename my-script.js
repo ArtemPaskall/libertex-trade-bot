@@ -861,7 +861,6 @@ document.addEventListener('set-value-to-editor', e => {
 
     const prismURL =
       '<script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"></script>\n'
-
     const prismLoaderURL =
       '<script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"></script>\n'
 
@@ -882,7 +881,7 @@ document.addEventListener('set-value-to-editor', e => {
 
       'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
 
-      '}, 900)\n' +
+      '}, 1000)\n' +
 
 
       'function changeActiveStyleOnAttributeChange(htmlElementsCollection) {\n' +
@@ -910,7 +909,7 @@ document.addEventListener('set-value-to-editor', e => {
       : css + stampedBodyFlexWrapped
 
     editor.setValue(stampedBodyHtml)
-  }, 1000)
+  }, 100)
 
   setTimeout(async () => {
     const saveButton = await waitForElement('.tbtn.tbtn-primary')
