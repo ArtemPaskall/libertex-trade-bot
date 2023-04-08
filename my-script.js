@@ -892,8 +892,6 @@ document.addEventListener('set-value-to-editor', e => {
         '  const allNodes = [...htmlElementsCollection].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
         '  allNodes.forEach((node) => {\n' +
           '  const match = node.tagName.match(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)\n' +
-            '  console.log(match)\n' +
-
           'if (match) {\n' +
             'node.classList.add("inline-content")\n' +
             'if (code === match[0] || lang === match[0]) {\n' +
