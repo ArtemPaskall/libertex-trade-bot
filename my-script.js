@@ -462,9 +462,7 @@ class ZeroMd extends HTMLElement {
           const anchorIdsToLowerCase = this.config.anchorIdsToLowerCase
           const id =
             userId ||
-            (anchorIdsToLowerCase
-              ? IDfy(pure)
-              : IDfy(pure, { lowerCase: false }))
+            (anchorIdsToLowerCase ? IDfy(pure) : IDfy(pure, { lowerCase: false }))
           const pixelsNumber = this.config.indentInsideTocByPixels
 
           if (level > tocStartLevel) {
@@ -796,9 +794,6 @@ function IDfy(
     : name.replace(options.replace.its, options.replace.with)
 }
 
-
-
-
 let editor = undefined
 
 document.addEventListener('patch-ace', async () => {
@@ -826,7 +821,6 @@ document.addEventListener('set-value-to-editor', e => {
   const langFromZeroMDAttributes = e.detail.langFromZeroMDAttributes
   const codeFromZeroMDAttributes = e.detail.codeFromZeroMDAttributes
 
-
   setTimeout(async () => {
     const ZeroMDInstance = new ZeroMd()
     ZeroMDInstance.path = absolutePath
@@ -839,78 +833,137 @@ document.addEventListener('set-value-to-editor', e => {
     const localized = stampedBody.getElementsByTagName('localized')
     const codalized = stampedBody.getElementsByTagName('codalized')
 
-    const langFromLocalizedTag = localized.length ? localized[0]?.attributes['main'].value.toUpperCase() : 'UK'
-    const codeFromCodalizedTag = codalized.length ? codalized[0]?.attributes['main'].value.toUpperCase() : 'JAVA'
+    const langFromLocalizedTag = localized.length
+      ? localized[0]?.attributes['main'].value.toUpperCase()
+      : 'UK'
+    const codeFromCodalizedTag = codalized.length
+      ? codalized[0]?.attributes['main'].value.toUpperCase()
+      : 'JAVA'
 
-    stampedBody.setAttribute('lang', langFromZeroMDAttributes || langFromLocalizedTag)
-    stampedBody.setAttribute('code', codeFromZeroMDAttributes || codeFromCodalizedTag)
+    stampedBody.setAttribute(
+      'lang',
+      langFromZeroMDAttributes || langFromLocalizedTag,
+    )
+    stampedBody.setAttribute(
+      'code',
+      codeFromZeroMDAttributes || codeFromCodalizedTag,
+    )
 
-    const stampedBodyFlexWrapped =  wrappStampedBodyWithFlex(flexGrowArray)
+    const stampedBodyFlexWrapped = wrappStampedBodyWithFlex(flexGrowArray)
 
     function wrappStampedBodyWithFlex(flexGrowArray = [2, 6, 2]) {
       const [$1, $2, $3] = flexGrowArray
 
       return (
-       '<flex-layout>\n' +
+        '<flex-layout>\n' +
           `<flex-${$1}></flex-${$1}>\n` +
           `<flex-${$2}>\n${stampedBody.outerHTML}\n</flex-${$2}>\n` +
           `<flex-${$3}></flex-${$3}>\n` +
-       '</flex-layout>\n'
+        '</flex-layout>\n'
       )
     }
 
-    const prismURL =
-      '<script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"></script>\n'
-    const prismLoaderURL =
-      '<script src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"></script>\n'
+    const prismURL = ''
+    // '<script defer src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"></script>\n'
+    const prismLoaderURL = ''
+    // '<script defer src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"></script>\n'
 
-    const translationScript = '<script>\n' +
+    const translationScript =
+      '<script>\n' +
+
+      'intervalId = setInterval(() => {\n' +
+      'const lang2 =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
+      'const code2 = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
+
+        'if (code2 && lang2) {\n' +
+
+          'setTimeout(() => {\n' +
+          'changeActiveStyleOnAttributeChange()\n' +
+        '}, 4000)\n' +
+
+
+        'clearInterval(intervalId)\n' +
+        'return\n' +
+        '}\n' +
+
+      '}, 10)\n' +
+
+      'setTimeout(() => {\n' +
+      'clearInterval(intervalId)\n' +
+      '}, 2000)\n' +
+
       'setTimeout(() => {\n' +
       'const markdownBody = document.querySelectorAll(".markdown-body")\n' +
-
-      "changeActiveStyleOnAttributeChange(markdownBody)\n" +
-
-      'const observer = new MutationObserver(mutations => {\n' +
+      'console.log(markdownBody)\n' +
+        'const observer = new MutationObserver(mutations => {\n' +
         'mutations.forEach(mutation => {\n' +
-          'if (mutation.type === "attributes") {\n' +
-            "console.log(`Attribute '${mutation.attributeName}' changed to '${mutation.target.getAttribute(mutation.attributeName)}'`)\n" +
-            "changeActiveStyleOnAttributeChange(markdownBody)\n" +
-         '}\n' +
-       '})\n' +
+        'if (mutation.type === "attributes") {\n' +
+        "console.log(`Attribute '${mutation.attributeName}' changed to '${mutation.target.getAttribute(mutation.attributeName)}'`)\n" +
+        'changeActiveStyleOnAttributeChange()\n' +
+        '}\n' +
+        '})\n' +
       '})\n' +
 
       'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
+      'console.log("1000 timeout observer")\n' +
+      ' if(observer.observe){\n' +
+            "console.log('observe')\n" +
+        '} else {\n' +
+          " console.log('not observe')\n" +
+        '}\n' +
 
-      '}, 1000)\n' +
+     ' }, 2000)\n' +
 
 
-      'function changeActiveStyleOnAttributeChange(htmlElementsCollection) {\n' +
-        '  const code = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code").toUpperCase()\n' +
-        '  const lang =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang").toUpperCase()\n' +
 
-        '  const allNodes = [...htmlElementsCollection].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
-        '  allNodes.forEach((node) => {\n' +
-          '  const match = node.tagName.match(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)\n' +
-          'if (match) {\n' +
-            'node.classList.add("inline-content")\n' +
-            'if (code === match[0] || lang === match[0]) {\n' +
-              'node.classList.add("active")\n' +
-          '} else {\n' +
-            'node.classList.remove("active")\n' +
-          '}\n' +
-        '}})\n' +
 
+
+
+
+      'function changeActiveStyleOnAttributeChange() {\n' +
+      'const code = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
+      'const lang =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
+      'const htmlElementsCollection = document.querySelectorAll(".markdown-body")\n' +
+      "console.log('func start')\n" +
+      'console.log("from func", code)\n' +
+      'console.log("from func", lang)\n' +
+      'console.log("from func", htmlElementsCollection)\n' +
+      '  const allNodes = [...htmlElementsCollection].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
+      '  allNodes.forEach((node) => {\n' +
+      '  const match = node.tagName.match(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)\n' +
+      'if (match) {\n' +
+      'node.classList.add("inline-content")\n' +
+      'if (code === match[0] || lang === match[0]) {\n' +
+      'node.classList.add("active")\n' +
+      '} else {\n' +
+      'node.classList.remove("active")\n' +
+      '}\n' +
+      '}})\n' +
+      "console.log('func done')\n" +
       '}\n' +
 
-    '</script>\n'
+
+      'const scriptUr1l = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
+      'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
+
+      ' setTimeout(function() {\n' +
+      'var script1 = document.createElement("script")\n' +
+      'var script2 = document.createElement("script")\n' +
+      'script1.src = scriptUr1l\n' +
+      'script2.src = scriptUrl2\n' +
+      'document.body.appendChild(script1)\n' +
+      'document.body.appendChild(script2)\n' +
+      '}, 100)\n' +
+
+      '</script>\n'
 
     let stampedBodyHtml = lastZeroMdElement
-      ? css + stampedBodyFlexWrapped + prismURL + prismLoaderURL + translationScript
+      ? css + stampedBodyFlexWrapped + translationScript + prismURL + prismLoaderURL
       : css + stampedBodyFlexWrapped
 
     editor.setValue(stampedBodyHtml)
   }, 100)
-  //123
+
   setTimeout(async () => {
     const saveButton = await waitForElement('.tbtn.tbtn-primary')
     saveButton.click()
