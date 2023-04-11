@@ -871,15 +871,21 @@ document.addEventListener('set-value-to-editor', e => {
     const translationScript =
       '<script>\n' +
 
+      'let domRendered = false\n' +
+      'console.log("script before", domRendered)\n' +
+      'document.addEventListener("DOMContentLoaded", () => {\n' +
+        'domRendered = true\n' +
+      '})\n' +
+      'console.log("script after", domRendered)\n' +
+
       'intervalId = setInterval(() => {\n' +
       'const lang2 =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
       'const code2 = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
-
-        'if (code2 && lang2) {\n' +
-
+      'console.log("inside interval", domRendered)\n' +
+        'if (code2 && lang2 && domRendered) {\n' +
           'setTimeout(() => {\n' +
           'changeActiveStyleOnAttributeChange()\n' +
-        '}, 4000)\n' +
+        '}, 2000)\n' +
 
 
         'clearInterval(intervalId)\n' +
@@ -890,7 +896,7 @@ document.addEventListener('set-value-to-editor', e => {
 
       'setTimeout(() => {\n' +
       'clearInterval(intervalId)\n' +
-      '}, 2000)\n' +
+      '}, 500)\n' +
 
       'setTimeout(() => {\n' +
       'const markdownBody = document.querySelectorAll(".markdown-body")\n' +
@@ -912,12 +918,7 @@ document.addEventListener('set-value-to-editor', e => {
           " console.log('not observe')\n" +
         '}\n' +
 
-     ' }, 2000)\n' +
-
-
-
-
-
+     ' }, 2500)\n' +
 
 
       'function changeActiveStyleOnAttributeChange() {\n' +
@@ -943,19 +944,30 @@ document.addEventListener('set-value-to-editor', e => {
       '}\n' +
 
 
-      'const scriptUr1l = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
-      'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
+    'window.addEventListener("load", function() {\n' +
+    'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
+    'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
 
-      ' setTimeout(function() {\n' +
-      'var script1 = document.createElement("script")\n' +
-      'var script2 = document.createElement("script")\n' +
-      'script1.src = scriptUr1l\n' +
-      'script2.src = scriptUrl2\n' +
-      'document.body.appendChild(script1)\n' +
-      'document.body.appendChild(script2)\n' +
-      '}, 100)\n' +
+    // 'const linkUrl = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"\n' +
 
-      '</script>\n'
+    'const script1 = document.createElement("script")\n' +
+    'const script2 = document.createElement("script")\n' +
+    // 'const link = document.createElement("link")\n' +
+
+    'script1.src = scriptUrl1\n' +
+    'script2.src = scriptUrl2\n' +
+    'script1.defer = true\n' +
+    'script2.defer = true\n' +
+    // 'link.rel = "stylesheet"\n' +
+    // 'link.href = linkUrl\n' +
+
+    // 'document.head.appendChild(link)\n' +
+    'document.body.appendChild(script1)\n' +
+    'document.body.appendChild(script2)\n' +
+    "console.log('load')\n" +
+    '})\n' +
+
+    '</script>\n'
 
     let stampedBodyHtml = lastZeroMdElement
       ? css + stampedBodyFlexWrapped + translationScript + prismURL + prismLoaderURL
