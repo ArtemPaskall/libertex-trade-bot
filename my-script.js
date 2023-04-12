@@ -878,8 +878,7 @@ document.addEventListener('set-value-to-editor', e => {
             '})\n' +
           '})\n' +
 
-          'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
-        '})\n' +
+        'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
 
         'function changeActiveStyleOnAttributeChange(htmlElementsCollection) {\n' +
           'const code = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
@@ -897,48 +896,27 @@ document.addEventListener('set-value-to-editor', e => {
           '}})\n' +
         '}\n' +
 
-        'window.addEventListener("load", function() {\n' +
-          'setTimeout(() => {\n' +
-            'const markdown = document.querySelectorAll(".markdown-body")\n' +
-            'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
-            'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
-            'const linkUrl = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"\n' +
-            'const script1 = document.createElement("script")\n' +
-            'const script2 = document.createElement("script")\n' +
-            'const link = document.createElement("link")\n' +
-            'script1.defer = true\n' +
-            'script2.defer = true\n' +
-            'script1.src = scriptUrl1\n' +
-            'script2.src = scriptUrl2\n' +
-            'link.rel = "stylesheet"\n' +
-            'link.href = linkUrl\n' +
+        'applyPrismScripts(100)\n' +
+        'applyPrismScripts(200)\n' +
 
-            'markdown.forEach(node => {\n' +
-            'node.appendChild(script1)\n' +
-            'node.appendChild(script2)\n' +
-            '})\n' +
-          '}, 500)\n' +
-
+        'function applyPrismScripts(delay) {\n' +
           'setTimeout(() => {\n' +
           'const markdown = document.querySelectorAll(".markdown-body")\n' +
           'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
           'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
-          'const linkUrl = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"\n' +
           'const script1 = document.createElement("script")\n' +
           'const script2 = document.createElement("script")\n' +
-          'const link = document.createElement("link")\n' +
           'script1.defer = true\n' +
           'script2.defer = true\n' +
           'script1.src = scriptUrl1\n' +
           'script2.src = scriptUrl2\n' +
-          'link.rel = "stylesheet"\n' +
-          'link.href = linkUrl\n' +
 
           'markdown.forEach(node => {\n' +
           'node.appendChild(script1)\n' +
           'node.appendChild(script2)\n' +
           '})\n' +
-        '}, 1000)\n' +
+          '}, `${delay}`)\n' +
+        '}\n' +
 
         '})\n' +
       '</script>\n'
