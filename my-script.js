@@ -856,121 +856,95 @@ document.addEventListener('set-value-to-editor', e => {
 
       return (
         '<flex-layout>\n' +
-          `<flex-${$1}></flex-${$1}>\n` +
-          `<flex-${$2}>\n${stampedBody.outerHTML}\n</flex-${$2}>\n` +
-          `<flex-${$3}></flex-${$3}>\n` +
+        `<flex-${$1}></flex-${$1}>\n` +
+        `<flex-${$2}>\n${stampedBody.outerHTML}\n</flex-${$2}>\n` +
+        `<flex-${$3}></flex-${$3}>\n` +
         '</flex-layout>\n'
       )
     }
 
-    const prismURL = ''
-    // '<script defer src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"></script>\n'
-    const prismLoaderURL = ''
-    // '<script defer src="https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"></script>\n'
-
     const translationScript =
       '<script>\n' +
+        'window.addEventListener("load", () => {\n' +
+          'const markdownBody = document.querySelectorAll(".markdown-body")\n' +
 
-      'let domRendered = false\n' +
-      'console.log("script before", domRendered)\n' +
-      'document.addEventListener("DOMContentLoaded", () => {\n' +
-        'domRendered = true\n' +
-      '})\n' +
-      'console.log("script after", domRendered)\n' +
+          'changeActiveStyleOnAttributeChange(markdownBody)\n' +
 
-      'intervalId = setInterval(() => {\n' +
-      'const lang2 =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
-      'const code2 = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
-      'console.log("inside interval", domRendered)\n' +
-        'if (code2 && lang2 && domRendered) {\n' +
-          'setTimeout(() => {\n' +
-          'changeActiveStyleOnAttributeChange()\n' +
-        '}, 2000)\n' +
+          'const observer = new MutationObserver(mutations => {\n' +
+            'mutations.forEach(mutation => {\n' +
+              'if (mutation.type === "attributes") {\n' +
+                'changeActiveStyleOnAttributeChange(markdownBody)\n' +
+              '}\n' +
+            '})\n' +
+          '})\n' +
 
-
-        'clearInterval(intervalId)\n' +
-        'return\n' +
-        '}\n' +
-
-      '}, 10)\n' +
-
-      'setTimeout(() => {\n' +
-      'clearInterval(intervalId)\n' +
-      '}, 500)\n' +
-
-      'setTimeout(() => {\n' +
-      'const markdownBody = document.querySelectorAll(".markdown-body")\n' +
-      'console.log(markdownBody)\n' +
-        'const observer = new MutationObserver(mutations => {\n' +
-        'mutations.forEach(mutation => {\n' +
-        'if (mutation.type === "attributes") {\n' +
-        "console.log(`Attribute '${mutation.attributeName}' changed to '${mutation.target.getAttribute(mutation.attributeName)}'`)\n" +
-        'changeActiveStyleOnAttributeChange()\n' +
-        '}\n' +
+          'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
         '})\n' +
-      '})\n' +
 
-      'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
-      'console.log("1000 timeout observer")\n' +
-      ' if(observer.observe){\n' +
-            "console.log('observe')\n" +
-        '} else {\n' +
-          " console.log('not observe')\n" +
+        'function changeActiveStyleOnAttributeChange(htmlElementsCollection) {\n' +
+          'const code = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
+          'const lang =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
+          '  const allNodes = [...htmlElementsCollection].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
+          '  allNodes.forEach((node) => {\n' +
+          '  const match = node.tagName.match(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)\n' +
+          'if (match) {\n' +
+          'node.classList.add("inline-content")\n' +
+          'if (code === match[0] || lang === match[0]) {\n' +
+            'node.classList.add("active")\n' +
+          '} else {\n' +
+            'node.classList.remove("active")\n' +
+          '}\n' +
+          '}})\n' +
         '}\n' +
 
-     ' }, 2500)\n' +
+        'window.addEventListener("load", function() {\n' +
+          'setTimeout(() => {\n' +
+            'const markdown = document.querySelectorAll(".markdown-body")\n' +
+            'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
+            'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
+            'const linkUrl = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"\n' +
+            'const script1 = document.createElement("script")\n' +
+            'const script2 = document.createElement("script")\n' +
+            'const link = document.createElement("link")\n' +
+            'script1.defer = true\n' +
+            'script2.defer = true\n' +
+            'script1.src = scriptUrl1\n' +
+            'script2.src = scriptUrl2\n' +
+            'link.rel = "stylesheet"\n' +
+            'link.href = linkUrl\n' +
 
+            'markdown.forEach(node => {\n' +
+            'node.appendChild(script1)\n' +
+            'node.appendChild(script2)\n' +
+            '})\n' +
+          '}, 500)\n' +
 
-      'function changeActiveStyleOnAttributeChange() {\n' +
-      'const code = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
-      'const lang =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
-      'const htmlElementsCollection = document.querySelectorAll(".markdown-body")\n' +
-      "console.log('func start')\n" +
-      'console.log("from func", code)\n' +
-      'console.log("from func", lang)\n' +
-      'console.log("from func", htmlElementsCollection)\n' +
-      '  const allNodes = [...htmlElementsCollection].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
-      '  allNodes.forEach((node) => {\n' +
-      '  const match = node.tagName.match(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)\n' +
-      'if (match) {\n' +
-      'node.classList.add("inline-content")\n' +
-      'if (code === match[0] || lang === match[0]) {\n' +
-      'node.classList.add("active")\n' +
-      '} else {\n' +
-      'node.classList.remove("active")\n' +
-      '}\n' +
-      '}})\n' +
-      "console.log('func done')\n" +
-      '}\n' +
+          'setTimeout(() => {\n' +
+          'const markdown = document.querySelectorAll(".markdown-body")\n' +
+          'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
+          'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
+          'const linkUrl = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"\n' +
+          'const script1 = document.createElement("script")\n' +
+          'const script2 = document.createElement("script")\n' +
+          'const link = document.createElement("link")\n' +
+          'script1.defer = true\n' +
+          'script2.defer = true\n' +
+          'script1.src = scriptUrl1\n' +
+          'script2.src = scriptUrl2\n' +
+          'link.rel = "stylesheet"\n' +
+          'link.href = linkUrl\n' +
 
+          'markdown.forEach(node => {\n' +
+          'node.appendChild(script1)\n' +
+          'node.appendChild(script2)\n' +
+          '})\n' +
+        '}, 1000)\n' +
 
-    'window.addEventListener("load", function() {\n' +
-    'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
-    'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
-
-    // 'const linkUrl = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css"\n' +
-
-    'const script1 = document.createElement("script")\n' +
-    'const script2 = document.createElement("script")\n' +
-    // 'const link = document.createElement("link")\n' +
-
-    'script1.src = scriptUrl1\n' +
-    'script2.src = scriptUrl2\n' +
-    'script1.defer = true\n' +
-    'script2.defer = true\n' +
-    // 'link.rel = "stylesheet"\n' +
-    // 'link.href = linkUrl\n' +
-
-    // 'document.head.appendChild(link)\n' +
-    'document.body.appendChild(script1)\n' +
-    'document.body.appendChild(script2)\n' +
-    "console.log('load')\n" +
-    '})\n' +
-
-    '</script>\n'
+        '})\n' +
+      '</script>\n'
 
     let stampedBodyHtml = lastZeroMdElement
-      ? css + stampedBodyFlexWrapped + translationScript + prismURL + prismLoaderURL
+      ? css + stampedBodyFlexWrapped + translationScript
       : css + stampedBodyFlexWrapped
 
     editor.setValue(stampedBodyHtml)
