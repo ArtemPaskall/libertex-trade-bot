@@ -70,6 +70,11 @@
       return elementsWithPath.length > 0 ? true : false
     }
 
+    if (!elementsToPublishWithPath.length) {
+      alert('There is no zero-md block')
+      return
+    }
+
     const flexTagsArray = [...elementsToPublishWithPath[0].querySelectorAll('*')]
       .filter(node => node.className === 'hljs-title' && node.innerText.match(/\bflex-(1[0-2]|[1-9])\b/))
       .map(node => node.innerText)
