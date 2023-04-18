@@ -1,3 +1,4 @@
+// TODO: remove it, it should be somewhere on client's side
 window.ZeroMdConfig = {
   gitlab: {
     projectId: '16859899',
@@ -6,6 +7,8 @@ window.ZeroMdConfig = {
   },
 }
 
+// TODO: try to import ZeroMd, not implement it from scratch
+// await import('https://cdn.jsdelivr.net/gh/autotesthow/zero-md/zero-md.js')
 class ZeroMd extends HTMLElement {
   get src() {
     return this.getAttribute('src')
@@ -780,6 +783,7 @@ class ZeroMd extends HTMLElement {
   }
 }
 
+// TODO: do we even need this? since below we use class explicitly...
 customElements.define('zero-md', ZeroMd)
 
 const notAUnicodeWord =
@@ -865,60 +869,52 @@ document.addEventListener('set-value-to-editor', e => {
 
     const translationScript =
       '<script>\n' +
-        'window.addEventListener("load", () => {\n' +
-          'const markdownBody = document.querySelectorAll(".markdown-body")\n' +
-
-          'changeActiveStyleOnAttributeChange(markdownBody)\n' +
-
-          'const observer = new MutationObserver(mutations => {\n' +
-            'mutations.forEach(mutation => {\n' +
-              'if (mutation.type === "attributes") {\n' +
-                'changeActiveStyleOnAttributeChange(markdownBody)\n' +
-              '}\n' +
-            '})\n' +
-          '})\n' +
-
-        'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
-
-        'function changeActiveStyleOnAttributeChange(htmlElementsCollection) {\n' +
-          'const code = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
-          'const lang =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
-          '  const allNodes = [...htmlElementsCollection].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
-          '  allNodes.forEach((node) => {\n' +
-          '  const match = node.tagName.match(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)\n' +
-          'if (match) {\n' +
-          'node.classList.add("inline-content")\n' +
-          'if (code === match[0] || lang === match[0]) {\n' +
-            'node.classList.add("active")\n' +
-          '} else {\n' +
-            'node.classList.remove("active")\n' +
-          '}\n' +
-          '}})\n' +
-        '}\n' +
-
-        'applyPrismScripts(100)\n' +
-        'applyPrismScripts(200)\n' +
-
-        'function applyPrismScripts(delay) {\n' +
-          'setTimeout(() => {\n' +
-          'const markdown = document.querySelectorAll(".markdown-body")\n' +
-          'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
-          'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
-          'const script1 = document.createElement("script")\n' +
-          'const script2 = document.createElement("script")\n' +
-          'script1.defer = true\n' +
-          'script2.defer = true\n' +
-          'script1.src = scriptUrl1\n' +
-          'script2.src = scriptUrl2\n' +
-
-          'markdown.forEach(node => {\n' +
-          'node.appendChild(script1)\n' +
-          'node.appendChild(script2)\n' +
-          '})\n' +
-          '}, `${delay}`)\n' +
-        '}\n' +
-
-        '})\n' +
+      'window.addEventListener("load", () => {\n' +
+      'const markdownBody = document.querySelectorAll(".markdown-body")\n' +
+      'changeActiveStyleOnAttributeChange(markdownBody)\n' +
+      'const observer = new MutationObserver(mutations => {\n' +
+      'mutations.forEach(mutation => {\n' +
+      'if (mutation.type === "attributes") {\n' +
+      'changeActiveStyleOnAttributeChange(markdownBody)\n' +
+      '}\n' +
+      '})\n' +
+      '})\n' +
+      'observer.observe(markdownBody[0], { attributes: true, attributeFilter: ["lang", "code"] })\n' +
+      'function changeActiveStyleOnAttributeChange(htmlElementsCollection) {\n' +
+      'const code = window.localStorage.getItem("automician.ButtonsMenu..markdown-body.code")?.toUpperCase()\n' +
+      'const lang =  window.localStorage.getItem("automician.ButtonsMenu..markdown-body.lang")?.toUpperCase()\n' +
+      '  const allNodes = [...htmlElementsCollection].reduce((acc, node) => [...acc, ...node.querySelectorAll("*")], [])\n' +
+      '  allNodes.forEach((node) => {\n' +
+      '  const match = node.tagName.match(/\\b(js|ts|java|py|cs|en|uk|ru)\\b/gi)\n' +
+      'if (match) {\n' +
+      'node.classList.add("inline-content")\n' +
+      'if (code === match[0] || lang === match[0]) {\n' +
+      'node.classList.add("active")\n' +
+      '} else {\n' +
+      'node.classList.remove("active")\n' +
+      '}\n' +
+      '}})\n' +
+      '}\n' +
+      'applyPrismScripts(100)\n' +
+      'applyPrismScripts(200)\n' +
+      'function applyPrismScripts(delay) {\n' +
+      'setTimeout(() => {\n' +
+      'const markdown = document.querySelectorAll(".markdown-body")\n' +
+      'const scriptUrl1 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/prism.min.js"\n' +
+      'const scriptUrl2 = "https://cdn.jsdelivr.net/gh/PrismJS/prism@1/plugins/autoloader/prism-autoloader.min.js"\n' +
+      'const script1 = document.createElement("script")\n' +
+      'const script2 = document.createElement("script")\n' +
+      'script1.defer = true\n' +
+      'script2.defer = true\n' +
+      'script1.src = scriptUrl1\n' +
+      'script2.src = scriptUrl2\n' +
+      'markdown.forEach(node => {\n' +
+      'node.appendChild(script1)\n' +
+      'node.appendChild(script2)\n' +
+      '})\n' +
+      '}, `${delay}`)\n' +
+      '}\n' +
+      '})\n' +
       '</script>\n'
 
     let stampedBodyHtml = lastZeroMdElement
