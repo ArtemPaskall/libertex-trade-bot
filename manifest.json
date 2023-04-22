@@ -16,7 +16,10 @@
     "web_accessible_resources": [
       {
         "resources": [
-          "my-script.js"
+          "my-script.js",
+          "src/utils/IDfy.js",
+          "src/index.js"
+
         ],
         "matches": ["https://tilda.cc/*"]
       }

@@ -1,4 +1,4 @@
-import IDfy from './IDfy'
+import IDfy from './utils/IDfy.js'
 
 export class ZeroMd extends HTMLElement {
   get src() {
@@ -61,7 +61,7 @@ export class ZeroMd extends HTMLElement {
     return ['src', 'path', 'lang', 'code']
   }
 
-  attributeChangedCallback(name, old, val, lang) {
+  attributeChangedCallback(name, old, val) {
     if (
       (name === 'src' || name === 'path' || name === 'lang' || name === 'code') &&
       this.connected &&
@@ -70,9 +70,6 @@ export class ZeroMd extends HTMLElement {
     ) {
       this.render()
     }
-
-    console.log(lang);
-    console.log(this.lang);
   }
 
   constructor(defaults) {
@@ -86,7 +83,8 @@ export class ZeroMd extends HTMLElement {
       ],
       cssUrls: [
         'https://cdn.jsdelivr.net/gh/sindresorhus/github-markdown-css@4/github-markdown.min.css',
-        'https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css'
+        'https://cdn.jsdelivr.net/gh/PrismJS/prism@1/themes/prism.min.css',
+        'https://cdn.jsdelivr.net/gh/automician/buttons-menu-custom-element@98902f0ad3f21fa6a2f3e0d1aa75b6f478557936/build/static/css/main.e5d0f3d9.css'
       ],
       hostCss:
         ':host{display:block;position:relative;contain:content;}:host([hidden]){display:none;}' +
@@ -183,6 +181,7 @@ export class ZeroMd extends HTMLElement {
     })
     this.observeChanges()
   }
+
   connectedCallback() {
     this.connected = true
     this.fire('zero-md-connected', {}, { bubbles: false, composed: false })
@@ -374,6 +373,26 @@ export class ZeroMd extends HTMLElement {
         const [[shouldBeCodalized, __, defaultCodeFromMd]] = codalizedMatch.length
           ? codalizedMatch
           : [[]]
+
+        const localizedMatch = [...md.matchAll(/<localized( main="(uk|ru|en)")?\/>/gim)]
+        const [[shouldBeLocalized, _, defaultLangFromMd]] = localizedMatch.length
+          ? localizedMatch
+          : [[]]
+
+        const translationPerCodeOption = /<!--(js|ts|py|java|cs)(\W)(.*?)\2(.*?)\2-->/gim
+        ;[...md.matchAll(translationPerCodeOption)].forEach(([match, perCode, __, from, to]) => {
+          if ((this.code || defaultCodeFromMd) === perCode) {
+            md = md.replace(new RegExp(from, 'gmi'), to)
+          }
+        })
+
+        const translationPerLangOption = /<!--(ru|uk|en)(\W)(.*?)\2(.*?)\2-->/gim
+        ;[...md.matchAll(translationPerLangOption)].forEach(([match, perLang, __, from, to]) => {
+          if ((this.lang || defaultLangFromMd) === perLang) {
+            md = md.replace(new RegExp(from, 'gmi'), to)
+          }
+        })
+
         if (shouldBeCodalized) {
           const codalized = /<((js|ts|py|java|cs)(-js|-ts|-py|-java|-cs)*)>([\s\S]*?)<\/\1>/gim
           md = md.replace(codalized, (match, $1, __, ___, $4) => {
@@ -384,37 +403,12 @@ export class ZeroMd extends HTMLElement {
           })
         }
 
-        const translationPerCodeOption = /<!--(js|ts|py|java|cs)(\W)(.*?)\2(.*?)\2-->/gim
-        ;[...md.matchAll(translationPerCodeOption)].forEach(([match, perCode, __, from, to]) => {
-          if ((this.code || defaultCodeFromMd) === perCode) {
-            md = md.replace(new RegExp(from, 'gmi'), to)
-          }
-        })
-
-        const localizedMatch = [...md.matchAll(/<localized( main="(uk|ru|en)")?\/>/gim)]
-        const [[shouldBeLocalized, _, defaultLangFromMd]] = localizedMatch.length
-          ? localizedMatch
-          : [[]]
         if (shouldBeLocalized) {
           const localized = /<(uk|ru|en)>([\s\S]*?)<\/\1>/gim
           md = md.replace(localized, (match, $1, $2) => {
             return $1 === (this.lang || defaultLangFromMd) ? $2 : ''
           })
         }
-
-        const translationPerLangOption = /<!--(ru|uk|en)(\W)(.*?)\2(.*?)\2-->/gim
-        ;[...md.matchAll(translationPerLangOption)].forEach(([match, perLang, __, from, to]) => {
-          if ((this.lang || defaultLangFromMd) === perLang) {
-            md = md.replace(new RegExp(from, 'gmi'), to)
-          }
-        })
-
-        const poetryBoldOption = /<!--(.+)poetryBold(.+)-->/i
-        const [, poetryBoldStart, poetryBoldEnd] = md.match(poetryBoldOption) || [null, '__', '__']
-        const boldRegExpRule = [
-          new RegExp(`${poetryBoldStart}(.*?)${poetryBoldEnd}`, 'gmi'),
-          '<b>$1</b>'
-        ]
 
         let tocLinks = []
         const tocStartLevelOption = /<!--TOC>(\d)-->/i
@@ -467,6 +461,12 @@ export class ZeroMd extends HTMLElement {
         const mdExtensionsWithId = /\.md#/gim
         md = md.replace(mdExtensionsWithId, `-md${window.location.search}#`)
 
+        const poetryBoldOption = /<!--(.+)poetryBold(.+)-->/i
+        const [, poetryBoldStart, poetryBoldEnd] = md.match(poetryBoldOption) || [null, '__', '__']
+        const boldRegExpRule = [
+          new RegExp(`${poetryBoldStart}(.*?)${poetryBoldEnd}`, 'gmi'),
+          '<b>$1</b>'
+        ]
         // todo: change to ```poetry ... ``` style
         const poetries = /---[a-z]*\n([\s\S]*?)\n---/gim
         // const backTickPoetries = /```poetry[a-z]*\n([\s\S]*?)\n```/gim
@@ -528,7 +528,6 @@ export class ZeroMd extends HTMLElement {
 
         if (isOriginalUnderscoredBoldDisabled) {
           html = html.replace(/‡‡‡/gim, '__')
-
         }
 
         const tocMarker = /\[toc\]/i
@@ -627,7 +626,6 @@ export class ZeroMd extends HTMLElement {
     })
   }
 
-
   // Insert or replace HTML body string into DOM and returns the node
   stampBody(html) {
     const node = this.makeNode(html)
@@ -721,4 +719,4 @@ export class ZeroMd extends HTMLElement {
   }
 }
 
-customElements.define('zero-md', ZeroMd)
+// customElements.define('zero-md', ZeroMd)

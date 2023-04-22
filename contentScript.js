@@ -1,8 +1,4 @@
 ;(() => {
-  const projectId = '16859899'
-  const branch = 'master'
-  const token = 'rWDVsgsvVsAENEjezaPC'
-
   function injectScript(file, node) {
     var th = document.getElementsByTagName(node)[0]
     var s = document.createElement('script')
@@ -31,7 +27,7 @@
         '<a href="#"><b style="color: #e66051">Render MD</b></a>'
 
       const regularPublishBtn = document.querySelector(
-        '#page_menu_publishlink',
+        '#page_menu_publishlink'
       ).parentElement
       const tildaNavMenu = regularPublishBtn.parentElement
 
@@ -47,45 +43,50 @@
     const elementsToPublish = [...mainContent.children].filter(
       child =>
         (child.attributes.off.value === 'n' || child.attributes.off.value === '') &&
-        findElementWithZeroMD(child),
+        findElementWithZeroMD(child)
     )
 
     function findElementWithZeroMD(item) {
       const elementsWithZero = [...item.querySelectorAll('*')].filter(
-        node => node.className === 'hljs-title' && node.innerText === 'zero-md',
+        node => node.className === 'hljs-title' && node.innerText === 'zero-md'
       )
 
       return elementsWithZero.length > 0 ? true : false
     }
 
     const elementsToPublishWithPath = elementsToPublish.filter(child =>
-      findElementWithPath(child),
+      findElementWithPath(child)
     )
 
     function findElementWithPath(item) {
       const elementsWithPath = [...item.querySelectorAll('*')].filter(
-        node => node.className === 'hljs-attribute' && node.innerText === 'path',
+        node => node.className === 'hljs-attribute' && node.innerText === 'path'
       )
 
       return elementsWithPath.length > 0 ? true : false
     }
 
     if (!elementsToPublishWithPath.length) {
-      alert('There is no zero-md block')
+      alert('There is no zero-md blocks')
       return
     }
 
     const flexTagsArray = [...elementsToPublishWithPath[0].querySelectorAll('*')]
-      .filter(node => node.className === 'hljs-title' && node.innerText.match(/\bflex-(1[0-2]|[1-9])\b/))
+      .filter(
+        node =>
+          node.className === 'hljs-title' &&
+          node.innerText.match(/\bflex-(1[0-2]|[1-9])\b/)
+      )
       .map(node => node.innerText)
 
     const flexGrowArray = getGrowValuesFrom(flexTagsArray)
 
     function getGrowValuesFrom(flexTagsArray) {
-      if (flexTagsArray.length === 6
-        && flexTagsArray[0] === flexTagsArray[1]
-        && flexTagsArray[2] === flexTagsArray[3]
-        && flexTagsArray[4] === flexTagsArray[5]
+      if (
+        flexTagsArray.length === 6 &&
+        flexTagsArray[0] === flexTagsArray[1] &&
+        flexTagsArray[2] === flexTagsArray[3] &&
+        flexTagsArray[4] === flexTagsArray[5]
       ) {
         const grow1 = flexTagsArray[0].split('-')[1]
         const grow2 = flexTagsArray[2].split('-')[1]
@@ -121,7 +122,13 @@
 
             setTimeout(() => {
               let patched = true
-              HTMLPublish(element, patched, index, elementsToPublishWithPath.length, flexGrowArray)
+              HTMLPublish(
+                element,
+                patched,
+                index,
+                elementsToPublishWithPath.length,
+                flexGrowArray
+              )
             }, 7500)
 
             setTimeout(() => {
@@ -130,7 +137,7 @@
           })
         })
       },
-      Promise.resolve(createLoader('wrapperDark')),
+      Promise.resolve(createLoader('wrapperDark'))
     )
 
     elementsPublishPromise.then(() => {
@@ -138,13 +145,19 @@
     })
   }
 
-  async function HTMLPublish(blockToPublish, patched, index, parentArrayLength, flexGrowArray) {
+  async function HTMLPublish(
+    blockToPublish,
+    patched,
+    index,
+    parentArrayLength,
+    flexGrowArray
+  ) {
     if (!patched) {
       const mainContent = document.querySelector('#allrecords')
 
       const findOnOffButton = element => {
         const onOffButton = [...element.querySelectorAll('*')].filter(
-          child => child.title === 'Спрятать/Показать',
+          child => child.title === 'Спрятать/Показать'
         )
 
         return onOffButton
@@ -152,24 +165,24 @@
 
       const findMooveUpButton = element => {
         const mooveUpButton = [...element.querySelectorAll('*')].filter(
-          child => child.title === 'Переместить вверх',
+          child => child.title === 'Переместить вверх'
         )
 
         return mooveUpButton
       }
 
       const onOffButton = [...blockToPublish.querySelectorAll('*')].filter(
-        child => child.title === 'Спрятать/Показать',
+        child => child.title === 'Спрятать/Показать'
       )
 
       const contentEditBtn = [...blockToPublish.querySelectorAll('*')].filter(
         child =>
           child.innerText === 'Контент' &&
-          child.className === 'recordedit_mainleft_but_settings_title',
+          child.className === 'recordedit_mainleft_but_settings_title'
       )
 
       const createCopyBlockToPublishBtn = [
-        ...blockToPublish.querySelectorAll('*'),
+        ...blockToPublish.querySelectorAll('*')
       ].filter(child => child.title === 'Дублировать')
 
       createCopyBlockToPublishBtn[0].click()
@@ -187,36 +200,52 @@
         contentEditBtn[0].click()
       }, 4000)
 
-      setTimeout(async () => {
+      setTimeout(() => {
         document.dispatchEvent(new CustomEvent('patch-ace'))
       }, 5000)
     } else {
       let absolutePath = [...blockToPublish.querySelectorAll('*')].filter(
-        element => element.className === 'hljs-value',
+        element => element.className === 'hljs-value'
       )[0].innerText
 
       const startIndex = absolutePath.match(/\w/).index
       const endIndex = absolutePath.indexOf('md') + 2
       absolutePath = absolutePath.slice(startIndex, endIndex)
 
-
       const langFromZeroMDAttributes = [...blockToPublish.querySelectorAll('*')]
-        .filter(node => node.className === 'hljs-attribute' && node.innerText === 'lang')
-        .map(node => node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase())
+        .filter(
+          node => node.className === 'hljs-attribute' && node.innerText === 'lang'
+        )
+        .map(node =>
+          node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase()
+        )
 
       const codeFromZeroMDAttributes = [...blockToPublish.querySelectorAll('*')]
-        .filter(node => node.className === 'hljs-attribute' && node.innerText === 'code')
-        .map(node => node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase())
+        .filter(
+          node => node.className === 'hljs-attribute' && node.innerText === 'code'
+        )
+        .map(node =>
+          node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase()
+        )
 
       const contentEditBtn = [...blockToPublish.querySelectorAll('*')].filter(
         child =>
           child.innerText === 'Контент' &&
-          child.className === 'recordedit_mainleft_but_settings_title',
+          child.className === 'recordedit_mainleft_but_settings_title'
       )
 
       contentEditBtn[0].click()
-
       const lastZeroMdElement = index === parentArrayLength - 1 ? true : false
+
+      const zeroLibrarySrc = chrome.runtime.getURL('src/index.js')
+      const zeroLibrary = await import(src)
+
+
+      const zeromdClass = zeroLibrary.ZeroMd.toString()
+      const idfyFucntion = zeroLibrary.default
+
+      console.log('zeromdClass', zeromdClass)
+      console.log('idfyFucntion', idfyFucntion)
 
       document.dispatchEvent(
         new CustomEvent('set-value-to-editor', {
@@ -226,11 +255,11 @@
             flexGrowArray,
             langFromZeroMDAttributes: langFromZeroMDAttributes[0],
             codeFromZeroMDAttributes: codeFromZeroMDAttributes[0],
-          },
-        }),
+            zeromdClass,
+            idfyFucntion
+          }
+        })
       )
     }
   }
 })()
-
-
