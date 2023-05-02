@@ -17,9 +17,8 @@
       {
         "resources": [
           "my-script.js",
-          "src/utils/IDfy.js",
-          "src/index.js"
-
+          "src/index.js",
+          "src/utils/IDfy.js"
         ],
         "matches": ["https://tilda.cc/*"]
       }

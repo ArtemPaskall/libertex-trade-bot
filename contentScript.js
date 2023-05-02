@@ -217,7 +217,8 @@
           node => node.className === 'hljs-attribute' && node.innerText === 'lang'
         )
         .map(node =>
-          node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase()
+          // node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0].toUpperCase()
+          node.nextSibling.nextSibling.innerText.match(/[a-zA-Z]+/)[0]
         )
 
       const codeFromZeroMDAttributes = [...blockToPublish.querySelectorAll('*')]
@@ -237,15 +238,20 @@
       contentEditBtn[0].click()
       const lastZeroMdElement = index === parentArrayLength - 1 ? true : false
 
-      const zeroLibrarySrc = chrome.runtime.getURL('src/index.js')
-      const zeroLibrary = await import(src)
+      // const zeroLibrarySrc = chrome.runtime.getURL('src/index.js')
+      // const zeroMdModule = await import(zeroLibrarySrc)
 
+      // const IDfyScr = chrome.runtime.getURL('src/utils/IDfy.js')
+      // const idfyMdModule = await import(IDfyScr)
 
-      const zeromdClass = zeroLibrary.ZeroMd.toString()
-      const idfyFucntion = zeroLibrary.default
+      // console.log('idfyMdModule', idfyMdModule)
+      // console.log('zeroMdModule', zeroMdModule)
 
-      console.log('zeromdClass', zeromdClass)
-      console.log('idfyFucntion', idfyFucntion)
+      // const zeromdClass = zeroMdModule.ZeroMd.toString()
+      // const idfyFucntion = idfyMdModule.default.toString()
+
+      // console.log('zeromdClass', zeromdClass)
+      // console.log('idfyFucntion', idfyFucntion)
 
       document.dispatchEvent(
         new CustomEvent('set-value-to-editor', {
@@ -255,8 +261,8 @@
             flexGrowArray,
             langFromZeroMDAttributes: langFromZeroMDAttributes[0],
             codeFromZeroMDAttributes: codeFromZeroMDAttributes[0],
-            zeromdClass,
-            idfyFucntion
+            // zeromdClass,
+            // idfyFucntion
           }
         })
       )
