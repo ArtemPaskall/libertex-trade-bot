@@ -92,4 +92,3 @@ function investmentsListHandler(element) {
 waitForElement('.investments-list', investmentsListHandler)
 
 // let socket = new WebSocket('wss://app.libertex.org/ws-gate/ws');
-//hjkjh
