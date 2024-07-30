@@ -1,35 +1,35 @@
 {
-    "name": "zero-md-tilda-rendering-chrome-extension",
+    "name": "libertex-trader-bot-chrome-extension",
     "version": "0.1.0",
-    "description": "Renders zero-md to html in html tilda blocks before publishing",
-    "permissions": ["storage", "tabs", "activeTab", "nativeMessaging", "background"],
-    "host_permissions": ["https://tilda.cc/*"],
+    "description": "Bot automates trading operations on Libertex for efficiency and profit",
+    "permissions": ["storage", "tabs", "webRequest", "webNavigation", "activeTab", "scripting" ],
+    "host_permissions": [
+      "https://app.libertex.org/*",
+      "https://app.libertex.com/*",
+      "https://libertex.org/*",
+      "https://libertex.com/*"
+    ],
     "background": {
       "service_worker": "background.js"
     },
     "content_scripts": [
       {
-        "matches": ["https://tilda.cc/*"],
-        "js": ["contentScript.js"]
-      }
-    ],
-    "web_accessible_resources": [
-      {
-        "resources": [
-          "my-script.js",
-          "src/index.js",
-          "src/utils/IDfy.js"
+        "matches": [
+          "https://app.libertex.org/*",
+          "https://app.libertex.com/*",
+          "https://libertex.org/*",
+          "https://libertex.com/*"
         ],
-        "matches": ["https://tilda.cc/*"]
+        "js": ["contentScript.js"]
       }
     ],
     "action": {
       "default_icon": {
-        "16": "assets/tilda.png",
-        "24": "assets/tilda.png",
-        "32": "assets/tilda.png"
+        "16": "assets/libertex-logo.png",
+        "24": "assets/libertex-logo.png",
+        "32": "assets/libertex-logo.png"
       },
-      "default_title": "Renders zero-md to html in html tilda blocks",
+      "default_title": "Bot automates trading operations on Libertex for efficiency and profit",
       "default_popup": "popup.html"
     },
     "manifest_version": 3
