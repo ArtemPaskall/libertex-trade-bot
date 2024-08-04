@@ -42,53 +42,119 @@ leftColumnHeaderElement.parentElement.insertBefore(
 
 // work with 'https://app.libertex.org/investments/active/' page
 
-function waitForElement(selector, callback, interval = 100, timeout = 5000) {
-  const startTime = Date.now()
+let hasHandledInvestmentsMessage = false;
 
-  const checkExist = setInterval(() => {
-    const element = document.querySelector(selector)
 
-    if (element) {
-      clearInterval(checkExist)
-      callback(element)
-    } else if (Date.now() - startTime > timeout) {
-      clearInterval(checkExist)
-      console.log(`Element with selector "${selector}" not found within timeout.`)
+chrome.runtime.onMessage.addListener((obj, sender, response) => {
+  const { type, pageId } = obj
+
+  if (type === 'INVESTMENTS' && !hasHandledInvestmentsMessage) {
+    hasHandledInvestmentsMessage = true;
+
+    console.log("Received message for investments page");
+    function waitForElement(selector, callback, interval = 100, timeout = 15000) {
+      const startTime = Date.now()
+
+      const checkExist = setInterval(() => {
+        const element = document.querySelector(selector)
+
+        if (element) {
+          clearInterval(checkExist)
+          callback(element)
+        } else if (Date.now() - startTime > timeout) {
+          clearInterval(checkExist)
+          console.log(`Element with selector "${selector}" not found within timeout.`)
+        }
+      }, interval)
     }
-  }, interval)
-}
 
-function investmentsListHandler(element) {
-  console.log('Element found:', element)
-  element.childNodes.forEach(node => {
-    console.log(node)
-    node.style.lineHeight = '22px'
+    function investmentsListHandler(element) {
+      console.log('Element found:', element)
+      element.childNodes.forEach(node => {
+        console.log(node)
+        node.style.lineHeight = '22px'
 
-    const startTimeElement = node.querySelector('.col.col-startTime')
-    const rules = document.createElement('select')
-    rules.style.width = '100px'
-    rules.style.color = 'black'
-    rules.style.backgroundColor = 'gray'
+        const startTimeElement = node.querySelector('.col.col-startTime')
+        const rules = document.createElement('select')
+        rules.style.width = '100px'
+        rules.style.color = 'black'
+        rules.style.backgroundColor = 'gray'
 
-    // Create and add <option> elements
-    let option1 = document.createElement('option')
-    option1.value = 'option1'
-    option1.text = 'Option 1'
-    rules.appendChild(option1)
+        // Create and add <option> elements
+        let option1 = document.createElement('option')
+        option1.value = 'option1'
+        option1.text = 'Option 1'
+        rules.appendChild(option1)
 
-    let option2 = document.createElement('option')
-    option2.value = 'option2'
-    option2.text = 'Option 2'
-    rules.appendChild(option2)
+        let option2 = document.createElement('option')
+        option2.value = 'option2'
+        option2.text = 'Option 2'
+        rules.appendChild(option2)
 
-    startTimeElement.appendChild(rules)
+        startTimeElement.appendChild(rules)
 
-    rules.addEventListener('click', function (event) {
-      event.stopPropagation()
-    })
-  })
-}
+        rules.addEventListener('click', function (event) {
+          event.stopPropagation()
+        })
+      })
+    }
 
-waitForElement('.investments-list', investmentsListHandler)
+    waitForElement('.investments-list', investmentsListHandler)
+  }
+
+  if (type === 'RESET_INVESTMENTS') {
+    hasHandledInvestmentsMessage = false;
+    console.log("Reset investments message flag");
+  }
+})
+
+// function waitForElement(selector, callback, interval = 100, timeout = 15000) {
+//   const startTime = Date.now()
+
+//   const checkExist = setInterval(() => {
+//     const element = document.querySelector(selector)
+
+//     if (element) {
+//       clearInterval(checkExist)
+//       callback(element)
+//     } else if (Date.now() - startTime > timeout) {
+//       clearInterval(checkExist)
+//       console.log(`Element with selector "${selector}" not found within timeout.`)
+//     }
+//   }, interval)
+// }
+
+// function investmentsListHandler(element) {
+//   console.log('Element found:', element)
+//   element.childNodes.forEach(node => {
+//     console.log(node)
+//     node.style.lineHeight = '22px'
+
+//     const startTimeElement = node.querySelector('.col.col-startTime')
+//     const rules = document.createElement('select')
+//     rules.style.width = '100px'
+//     rules.style.color = 'black'
+//     rules.style.backgroundColor = 'gray'
+
+//     // Create and add <option> elements
+//     let option1 = document.createElement('option')
+//     option1.value = 'option1'
+//     option1.text = 'Option 1'
+//     rules.appendChild(option1)
+
+//     let option2 = document.createElement('option')
+//     option2.value = 'option2'
+//     option2.text = 'Option 2'
+//     rules.appendChild(option2)
+
+//     startTimeElement.appendChild(rules)
+
+//     rules.addEventListener('click', function (event) {
+//       event.stopPropagation()
+//     })
+//   })
+// }
+
+// waitForElement('.investments-list', investmentsListHandler)
 
 // let socket = new WebSocket('wss://app.libertex.org/ws-gate/ws');

@@ -21,6 +21,11 @@
           "https://libertex.com/*"
         ],
         "js": ["contentScript.js"]
+      },    {
+        "matches": [
+          "https://app.libertex.org/investments/active/"
+        ],
+        "js": ["contentInvestments.js"]
       }
     ],
     "action": {
