@@ -2,16 +2,13 @@
     "name": "libertex-trader-bot-chrome-extension",
     "version": "0.1.0",
     "description": "Bot automates trading operations on Libertex for efficiency and profit",
-    "permissions": ["storage", "tabs", "webRequest", "webNavigation", "activeTab", "scripting" ],
+    "permissions": ["storage", "alarms","tabs", "webRequest", "webNavigation", "activeTab", "scripting", "notifications"],
     "host_permissions": [
       "https://app.libertex.org/*",
       "https://app.libertex.com/*",
       "https://libertex.org/*",
       "https://libertex.com/*"
     ],
-    "background": {
-      "service_worker": "background.js"
-    },
     "content_scripts": [
       {
         "matches": [
@@ -21,11 +18,15 @@
           "https://libertex.com/*"
         ],
         "js": ["contentScript.js"]
-      },    {
-        "matches": [
-          "https://app.libertex.org/investments/active/"
-        ],
-        "js": ["contentInvestments.js"]
+      }
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "web_accessible_resources": [
+      {
+        "resources": ["assets/alarm.wav", "assets/videoplayback.m4a"],
+        "matches": ["<all_urls>"]
       }
     ],
     "action": {

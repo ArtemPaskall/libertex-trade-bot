@@ -1,4 +1,4 @@
-// add script name to the status block to show script is active or not
+// // // add script name to the status block to show script is active or not
 const statusBlock = document.querySelector('.user-status')
 
 const scriptStatus = document.createElement('div')
@@ -9,7 +9,7 @@ scriptStatus.style.color = '#909294'
 
 statusBlock.appendChild(scriptStatus)
 
-//add the extension status bar to the header
+// // // add the extension status bar to the header
 const statusBar = document.createElement('div')
 statusBar.className = 'status-bar'
 statusBar.style.width = '250px'
@@ -40,19 +40,19 @@ leftColumnHeaderElement.parentElement.insertBefore(
   rightColumnHeaderElement,
 )
 
-// work with 'https://app.libertex.org/investments/active/' page
+// // // work with 'https://app.libertex.org/investments/active/' page
 
-let hasHandledInvestmentsMessage = false;
-
+let hasHandledInvestmentsMessage = false
 
 chrome.runtime.onMessage.addListener((obj, sender, response) => {
-  const { type, pageId } = obj
+  console.log(obj)
+  const { type } = obj
 
   if (type === 'INVESTMENTS' && !hasHandledInvestmentsMessage) {
-    hasHandledInvestmentsMessage = true;
+    hasHandledInvestmentsMessage = true
 
-    console.log("Received message for investments page");
-    function waitForElement(selector, callback, interval = 100, timeout = 15000) {
+    console.log('Received message from investments page')
+    function waitForElement(selector, callback, interval = 100, timeout = 5000) {
       const startTime = Date.now()
 
       const checkExist = setInterval(() => {
@@ -63,7 +63,9 @@ chrome.runtime.onMessage.addListener((obj, sender, response) => {
           callback(element)
         } else if (Date.now() - startTime > timeout) {
           clearInterval(checkExist)
-          console.log(`Element with selector "${selector}" not found within timeout.`)
+          console.log(
+            `Element with selector "${selector}" not found within timeout.`,
+          )
         }
       }, interval)
     }
@@ -71,7 +73,6 @@ chrome.runtime.onMessage.addListener((obj, sender, response) => {
     function investmentsListHandler(element) {
       console.log('Element found:', element)
       element.childNodes.forEach(node => {
-        console.log(node)
         node.style.lineHeight = '22px'
 
         const startTimeElement = node.querySelector('.col.col-startTime')
@@ -100,61 +101,49 @@ chrome.runtime.onMessage.addListener((obj, sender, response) => {
     }
 
     waitForElement('.investments-list', investmentsListHandler)
-  }
-
-  if (type === 'RESET_INVESTMENTS') {
-    hasHandledInvestmentsMessage = false;
-    console.log("Reset investments message flag");
+  } else if (type === 'RESET_INVESTMENTS') {
+    hasHandledInvestmentsMessage = false
   }
 })
 
-// function waitForElement(selector, callback, interval = 100, timeout = 15000) {
-//   const startTime = Date.now()
-
-//   const checkExist = setInterval(() => {
-//     const element = document.querySelector(selector)
-
-//     if (element) {
-//       clearInterval(checkExist)
-//       callback(element)
-//     } else if (Date.now() - startTime > timeout) {
-//       clearInterval(checkExist)
-//       console.log(`Element with selector "${selector}" not found within timeout.`)
-//     }
-//   }, interval)
-// }
-
-// function investmentsListHandler(element) {
-//   console.log('Element found:', element)
-//   element.childNodes.forEach(node => {
-//     console.log(node)
-//     node.style.lineHeight = '22px'
-
-//     const startTimeElement = node.querySelector('.col.col-startTime')
-//     const rules = document.createElement('select')
-//     rules.style.width = '100px'
-//     rules.style.color = 'black'
-//     rules.style.backgroundColor = 'gray'
-
-//     // Create and add <option> elements
-//     let option1 = document.createElement('option')
-//     option1.value = 'option1'
-//     option1.text = 'Option 1'
-//     rules.appendChild(option1)
-
-//     let option2 = document.createElement('option')
-//     option2.value = 'option2'
-//     option2.text = 'Option 2'
-//     rules.appendChild(option2)
-
-//     startTimeElement.appendChild(rules)
-
-//     rules.addEventListener('click', function (event) {
-//       event.stopPropagation()
-//     })
-//   })
-// }
-
-// waitForElement('.investments-list', investmentsListHandler)
-
 // let socket = new WebSocket('wss://app.libertex.org/ws-gate/ws');
+
+// // // Load the alarm sound
+const alarmSound = new Audio(chrome.runtime.getURL('assets/videoplayback.m4a'))
+
+// Function to check internet connection
+function checkConnection() {
+  if (!navigator.onLine) {
+    alarmSound.play().catch(error => {
+      console.error('Audio playback failed:', error)
+    })
+  }
+}
+
+// Function to create and click a hidden button
+function createAndClickHiddenButton() {
+  const button = document.createElement('button')
+  button.style.display = 'none'
+  button.addEventListener('click', () => {
+    alarmSound.play().catch(error => {
+      console.error('Audio playback failed:', error)
+    })
+  })
+  document.body.appendChild(button)
+  button.click()
+  document.body.removeChild(button)
+}
+
+// Event listeners for connection changes
+window.addEventListener('online', checkConnection)
+window.addEventListener('offline', checkConnection)
+
+// Initial check and simulate user interaction
+window.addEventListener('DOMContentLoaded', () => {
+  createAndClickHiddenButton()
+  checkConnection()
+})
+
+// Check connection every 30 seconds (30000 milliseconds)
+setInterval(checkConnection, 30000)
+
