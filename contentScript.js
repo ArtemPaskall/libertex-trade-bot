@@ -20,14 +20,13 @@ statusLabel.textContent = 'Status'
 statusLabel.style.cursor = 'pointer'
 
 const sound = document.createElement('div')
-sound.className = 'sound'
-sound.textContent = 'Sound'
+sound.className = 'sound-label'
+sound.textContent = 'Sound OFF'
 sound.style.cursor = 'pointer'
 
 const connection = document.createElement('div')
-connection.className = 'connection'
+connection.className = 'connection-label'
 connection.textContent = 'Connection'
-connection.style.cursor = 'pointer'
 
 statusBar.appendChild(statusLabel)
 statusBar.appendChild(sound)
@@ -40,98 +39,81 @@ leftColumnHeaderElement.parentElement.insertBefore(
   rightColumnHeaderElement,
 )
 
-// // // work with 'https://app.libertex.org/investments/active/' page
-
-let hasHandledInvestmentsMessage = false
-
-chrome.runtime.onMessage.addListener((obj, sender, response) => {
-  console.log(obj)
-  const { type } = obj
-
-  if (type === 'INVESTMENTS' && !hasHandledInvestmentsMessage) {
-    hasHandledInvestmentsMessage = true
-
-    console.log('Received message from investments page')
-    function waitForElement(selector, callback, interval = 100, timeout = 5000) {
-      const startTime = Date.now()
-
-      const checkExist = setInterval(() => {
-        const element = document.querySelector(selector)
-
-        if (element) {
-          clearInterval(checkExist)
-          callback(element)
-        } else if (Date.now() - startTime > timeout) {
-          clearInterval(checkExist)
-          console.log(
-            `Element with selector "${selector}" not found within timeout.`,
-          )
-        }
-      }, interval)
-    }
-
-    function investmentsListHandler(element) {
-      console.log('Element found:', element)
-      element.childNodes.forEach(node => {
-        node.style.lineHeight = '22px'
-
-        const startTimeElement = node.querySelector('.col.col-startTime')
-        const rules = document.createElement('select')
-        rules.style.width = '100px'
-        rules.style.color = 'black'
-        rules.style.backgroundColor = 'gray'
-
-        // Create and add <option> elements
-        let option1 = document.createElement('option')
-        option1.value = 'option1'
-        option1.text = 'Option 1'
-        rules.appendChild(option1)
-
-        let option2 = document.createElement('option')
-        option2.value = 'option2'
-        option2.text = 'Option 2'
-        rules.appendChild(option2)
-
-        startTimeElement.appendChild(rules)
-
-        rules.addEventListener('click', function (event) {
-          event.stopPropagation()
-        })
-      })
-    }
-
-    waitForElement('.investments-list', investmentsListHandler)
-  } else if (type === 'RESET_INVESTMENTS') {
-    hasHandledInvestmentsMessage = false
-  }
-})
-
-// let socket = new WebSocket('wss://app.libertex.org/ws-gate/ws');
-
-// // // Load the alarm sound
+// // // alarm function monitor internet connection
 const alarmSound = new Audio(chrome.runtime.getURL('assets/videoplayback.m4a'))
+
+let userInteracted = false
+
+// Function to unlock audio playback and check status
+function unlockAudio() {
+  userInteracted = true
+  alarmSound
+    .play()
+    .then(() => {
+      // Audio playback succeeded, immediately pause it
+      alarmSound.pause()
+      alarmSound.currentTime = 0
+      updateAudioLabel('#02fd4f')
+    })
+    .catch(error => {
+      console.log('Audio playback failed:', error)
+      updateAudioLabel('red')
+    })
+
+  window.removeEventListener('click', unlockAudio)
+  window.removeEventListener('keydown', unlockAudio)
+}
+
+// Function to update the audio label color
+function updateAudioLabel(color) {
+  waitForElement('.sound-label')
+    .then(element => {
+      element.textContent = color === 'red' ? 'Sound OFF' : 'Sound ON'
+      color === 'red' && (element.title = 'Turn ON')
+      element.style.color = color
+    })
+    .catch(error => console.log(error))
+}
+
+// Add event listeners to detect the first user interaction
+window.addEventListener('click', unlockAudio)
+window.addEventListener('keydown', unlockAudio)
+
+// Initial check to see if audio is allowed
+function checkAudioStatus() {
+  alarmSound
+    .play()
+    .then(() => {
+      // Audio playback succeeded, immediately pause it
+      alarmSound.pause()
+      alarmSound.currentTime = 0
+      updateAudioLabel('#02fd4f')
+    })
+    .catch(error => {
+      console.log('Audio playback failed:', error)
+      updateAudioLabel('red')
+    })
+}
 
 // Function to check internet connection
 function checkConnection() {
+  waitForElement('.connection-label')
+    .then(element => {
+      element.style.color = '#02fd4f'
+    })
+    .catch(error => console.log(error))
+
   if (!navigator.onLine) {
     alarmSound.play().catch(error => {
       console.error('Audio playback failed:', error)
     })
-  }
-}
 
-// Function to create and click a hidden button
-function createAndClickHiddenButton() {
-  const button = document.createElement('button')
-  button.style.display = 'none'
-  button.addEventListener('click', () => {
-    alarmSound.play().catch(error => {
-      console.error('Audio playback failed:', error)
-    })
-  })
-  document.body.appendChild(button)
-  button.click()
-  document.body.removeChild(button)
+    waitForElement('.connection-label')
+      .then(element => {
+        element.style.color = 'red'
+      })
+      .catch(error => console.log(error))
+  }
 }
 
 // Event listeners for connection changes
@@ -139,11 +121,83 @@ window.addEventListener('online', checkConnection)
 window.addEventListener('offline', checkConnection)
 
 // Initial check and simulate user interaction
-window.addEventListener('DOMContentLoaded', () => {
-  createAndClickHiddenButton()
+window.addEventListener('load', () => {
   checkConnection()
+  checkAudioStatus()
 })
 
 // Check connection every 30 seconds (30000 milliseconds)
 setInterval(checkConnection, 30000)
 
+// // // work with 'https://app.libertex.org/investments/active/' page
+let hasHandledInvestmentsMessage = false
+
+chrome.runtime.onMessage.addListener((obj, sender, response) => {
+  const { type } = obj
+
+  if (type === 'INVESTMENTS' && !hasHandledInvestmentsMessage) {
+    hasHandledInvestmentsMessage = true
+
+    waitForElement('.investments-list')
+      .then(element => {
+        function investmentsListHandler(element) {
+          console.log('Element found:', element)
+          element.childNodes.forEach(node => {
+            node.style.lineHeight = '22px'
+
+            const startTimeElement = node.querySelector('.col.col-startTime')
+            const rules = document.createElement('select')
+            rules.style.width = '100px'
+            rules.style.color = 'black'
+            rules.style.backgroundColor = 'gray'
+
+            // Create and add <option> elements
+            let option1 = document.createElement('option')
+            option1.value = 'option1'
+            option1.text = 'Option 1'
+            rules.appendChild(option1)
+
+            let option2 = document.createElement('option')
+            option2.value = 'option2'
+            option2.text = 'Option 2'
+            rules.appendChild(option2)
+
+            startTimeElement.appendChild(rules)
+
+            rules.addEventListener('click', function (event) {
+              event.stopPropagation()
+            })
+          })
+        }
+        investmentsListHandler(element)
+      })
+      .catch(error => console.log(error))
+  } else if (type === 'RESET_INVESTMENTS') {
+    hasHandledInvestmentsMessage = false
+  }
+})
+
+// // // function helper to find dinamic content
+function waitForElement(selector, interval = 100, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const startTime = Date.now()
+
+    const checkExist = setInterval(() => {
+      const element = document.querySelector(selector)
+
+      if (element) {
+        clearInterval(checkExist)
+        resolve(element)
+      } else if (Date.now() - startTime > timeout) {
+        clearInterval(checkExist)
+        reject(
+          new Error(
+            `Element with selector "${selector}" not found within timeout.`,
+          ),
+        )
+      }
+    }, interval)
+  })
+}
+
+// let socket = new WebSocket('wss://app.libertex.org/ws-gate/ws');
